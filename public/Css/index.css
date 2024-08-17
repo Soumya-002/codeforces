@@ -78,7 +78,6 @@ h1 {
     gap: 15px;
 }
 .header nav a {
-    color: white;
     text-decoration: none;
     padding: 10px 15px;
     border-radius: 5px;
@@ -86,7 +85,7 @@ h1 {
 }
 .header nav a:hover {
     background-color: #0056b3; /* Darker blue */
-    color: #f0f0f0;
+    color: #340caf;
 }
 .header nav a.active {
     background-color: #0056b3; /* Highlight active link */
@@ -117,15 +116,106 @@ h1 {
     margin: 10px 0;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: center;
 }
 
 #tagFilter {
     width: 200px;
     padding: 5px;
     border-radius: 5px;
+    scrollbar-width: thin;
 }
-
+#ratingFilter{
+    width: 85px;
+    padding: 10px;
+    scrollbar-width: thin;
+}
 #tagFilter option {
     padding: 5px;
 }
+/* Hide the filter sections initially */
+#tagFilterSection,
+#ratingFilterSection {
+    display: none;
+}
+
+/* Show filter sections when problems are loaded */
+.show-filters #tagFilterSection,
+.show-filters #ratingFilterSection {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+.btn{
+    margin: 10px 0px;
+    border-radius: 5%;
+}
+.like-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-left: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.like-button:hover {
+    background-color: #0056b3;
+}
+
+
+:root {
+    --background-color: #ffffff;
+    --text-color: #000000;
+    --header-background: #f8f9fa;
+    --filter-background: #ffffff;
+    --button-background: #007bff;
+    --button-text-color: #ffffff;
+}
+
+.dark-mode {
+    --background-color: #121212;
+    --text-color: #4f11c4;
+    --header-background: #1f1f1f;
+    --filter-background: #2c2c2c;
+    --button-background: #3a3a3a;
+    --button-text-color: #ffffff;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: Arial, sans-serif;
+}
+
+.header {
+    background-color: var(--header-background);
+    color: var(--text-color);
+}
+
+.filter-container {
+    background-color: var(--filter-background);
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.filter-group select {
+    background-color: var(--filter-background);
+    color: var(--text-color);
+    border: 1px solid var(--text-color);
+}
+
+button {
+    background-color: var(--button-background);
+    color: var(--button-text-color);
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+

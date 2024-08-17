@@ -19,15 +19,18 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
     .catch(err => console.error('Could not connect to MongoDB:', err));
 
 // Define a schema for solutions
-const solutionSchema = new mongoose.Schema({
-    username: String,
+const SolutionSchema = new mongoose.Schema({
     problemId: String,
+    username: String,
     solutionText: String,
-    date: { type: Date, default: Date.now }
+    date: { type: Date, default: Date.now },
+    likes: { type: Number, default: 0 }, // Add this line
+    dislikes: { type: Number, default: 0 }
 });
 
 // Create a model from the schema
-const Solution = mongoose.model('Solution', solutionSchema);
+const Solution = mongoose.model('Solution', SolutionSchema);
+module.exports = Solution;
 
 // Route to handle solution submission
 app.post('/submit-solution', async (req, res) => {
@@ -68,12 +71,12 @@ app.get('/problems', async (req, res) => {
 
         // Filter by tags if provided
         let filteredProblems = cachedProblems;
-        if (tags) {
-            const tagArray = tags.split(',');
-            filteredProblems = filteredProblems.filter(problem =>
-                tagArray.every(tag => problem.tags.includes(tag))
-            );
-        }
+        // if (tags) {
+        //     const tagArray = tags.split(',');
+        //     filteredProblems = filteredProblems.filter(problem =>
+        //         tagArray.every(tag => problem.tags.includes(tag))
+        //     );
+        // }
 
         // Filter by ratings if provided
         if (ratings) {
@@ -81,7 +84,7 @@ app.get('/problems', async (req, res) => {
             filteredProblems = filteredProblems.filter(problem => {
                 const rating = Number(problem.rating);
                 const hasRating = ratingArray.includes(rating);
-                console.log('Problem rating:', rating, 'Has rating:', hasRating);
+                // console.log('Problem rating:', rating, 'Has rating:', hasRating);
                 return hasRating;
             });
         }
@@ -130,6 +133,29 @@ app.get('/get-solutions', async (req, res) => {
       res.status(500).json({ success: false, message: 'Failed to fetch solutions.' });
   }
 });
+app.post('/like-solution/:id', async (req, res) => {
+    const solutionId = req.params.id;
+    try {
+        const updatedSolution = await Solution.findByIdAndUpdate(
+            solutionId,
+            { $inc: { likes: 1 } }, // Increment the likes by 1
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedSolution) {
+            return res.status(404).json({ error: 'Solution not found' });
+        }
+
+        res.json({ likes: updatedSolution.likes }); // Return the updated likes count
+    } catch (error) {
+        console.error('Error updating likes:', error);
+        res.status(500).json({ error: 'An error occurred while liking the solution' });
+    }
+});
+
+
+
+
 
 
 

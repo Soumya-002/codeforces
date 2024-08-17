@@ -10,7 +10,7 @@ body {
 }
 .container {
     background: white;
-    padding: 20px;
+    padding: 50px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 400px;
@@ -36,4 +36,57 @@ button {
 }
 button:hover {
     background-color: #0056b3;
+}
+
+:root {
+    --background-color: #ffffff;
+    --text-color: #000000;
+    --header-background: #f8f9fa;
+    --filter-background: #ffffff;
+    --button-background: #007bff;
+    --button-text-color: #ffffff;
+}
+
+.dark-mode {
+    --background-color: #121212;
+    --text-color: #ffffff;
+    --header-background: #1f1f1f;
+    --filter-background: #2c2c2c;
+    --button-background: #3a3a3a;
+    --button-text-color: #ffffff;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: Arial, sans-serif;
+}
+
+.header {
+    background-color: var(--header-background);
+    color: var(--text-color);
+}
+
+.filter-container {
+    background-color: var(--filter-background);
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.filter-group select {
+    background-color: var(--filter-background);
+    color: var(--text-color);
+    border: 1px solid var(--text-color);
+}
+
+button {
+    background-color: var(--button-background);
+    color: var(--button-text-color);
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
 }

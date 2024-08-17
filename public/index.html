@@ -11,8 +11,9 @@
         <div class="logo">Codeforces App</div>
         <nav>
             <a href="submit.html" class="active">Submit Problems</a>
-            <a href="solutions.html">View Solutions</a>
+            <a href="solutions.html" class="active">View Solutions</a>
         </nav>
+        <button onclick="toggleDarkMode()" id="darkModeToggle">Dark Mode</button>
     </header>
     <div class="container">
                 <h1>Codeforces Problems</h1>
@@ -20,7 +21,7 @@
                     <input type="text" id="username" placeholder="Enter your Codeforces username">
                     <button onclick="loadProblems()">Load Problems</button>
             </div>
-            <div class="tag-filter" id="tagFilterSection" style="display: none;">
+            <div class="tag-filter" id="tagFilterSection">
 
                 <div class="filter-container">
                     <select id="tagFilter" multiple>
@@ -35,15 +36,12 @@
 
                         <!-- Add more tags as needed -->
                     </select>
-                    <button onclick="loadProblems()" style="margin-right: 35px;">Apply Filter</button>
+                    <button onclick="loadProblems()" class="btn">Filter by Tags</button>
                 </div>
 
-                <div class="rating-filter" id="ratingFilterSection" style="display: none;">
-                    <div class="filter-header">
-                        <label for="ratingFilter">Filter by Rating:</label>
-                    </div>
+                <div class="rating-filter" id="ratingFilterSection">
                     <div class="filter-container">
-                        <select id="ratingFilter" multiple>
+                        <select id="ratingFilter" class="tagFilter" multiple>
                             <option value="1000">1000</option>
                             <option value="1200">1200</option>
                             <option value="1400">1400</option>
@@ -52,17 +50,17 @@
                             <option value="2000">2000</option>
                             <!-- Add more ratings as needed -->
                         </select>
-                        <button onclick="loadProblems()">Apply Filter</button>
+                        <button onclick="loadProblems()" class="btn">Filter by Rating</button>
                     </div>
                 </div>
-                
+            </div>    
         
         <div id="problems"></div>
         <div class="pagination">
             <button id="prevPage" onclick="changePage(-1)">Previous</button>
             <button id="nextPage" onclick="changePage(1)">Next</button>
+        
         </div>
-    </div>
     <script>
         let currentPage = 1;
         const problemsPerPage = 50;
@@ -75,7 +73,6 @@
     fetch(`/problems?page=${currentPage}&limit=${problemsPerPage}&tags=${selectedTags.join(',')}&ratings=${selectedRatings.join(',')}`)
     .then(response => response.json())
     .then(problems => {
-        // console.log(problems);
         if (!Array.isArray(problems.problems)) {
             throw new Error('Problems response is not an array');
         }
@@ -90,9 +87,6 @@
         })
         .then(response => response.json())
         .then(solvedProblems => {
-            // Log the solved problems to check the structure
-            console.log('Solved problems fetched:', solvedProblems);
-
             if (!Array.isArray(solvedProblems)) {
                 throw new Error('Solved problems response is not an array');
             }
@@ -105,25 +99,25 @@
                     solved.contestId === problem.contestId && solved.index === problem.index
                 );
 
-                if (selectedTags.length === 0 || selectedTags.some(tag => problem.tags.includes(tag))) {
-                    if (selectedRatings.length === 0 || selectedRatings.includes(problem.rating)) {
-                        const problemElement = document.createElement('div');
-                        problemElement.className = 'problem' + (isSolved ? ' solved' : '');
+                // Check if the problem matches the selected tags and ratings
+                if ((selectedTags.length === 0 || selectedTags.some(tag => problem.tags.includes(tag))) &&
+                    (selectedRatings.length === 0 || selectedRatings.includes(String(problem.rating)))) {
 
-                        const problemLink = document.createElement('a');
-                        problemLink.href = `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`;
-                        problemLink.target = '_blank';
-                        problemLink.textContent = `${problem.contestId} - ${problem.name} (${problem.index})`;
+                    const problemElement = document.createElement('div');
+                    problemElement.className = 'problem' + (isSolved ? ' solved' : '');
 
-                        problemElement.appendChild(problemLink);
-                        problemsContainer.appendChild(problemElement);
-                    }
+                    const problemLink = document.createElement('a');
+                    problemLink.href = `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`;
+                    problemLink.target = '_blank';
+                    problemLink.textContent = `${problem.contestId} - ${problem.name} (${problem.index})`;
+
+                    problemElement.appendChild(problemLink);
+                    problemsContainer.appendChild(problemElement);
                 }
             });
 
-            // Show the filter section
-            document.getElementById('tagFilterSection').style.display = 'block';
-            document.getElementById('ratingFilterSection').style.display = 'block';
+            // Show the filter sections
+            document.querySelector('.container').classList.add('show-filters');
 
             updatePaginationControls();
         })
@@ -131,7 +125,6 @@
     })
     .catch(error => console.error('Error fetching problems:', error));
 }
-
 
 
 function displayProblems(problems, solvedProblems) {
@@ -224,24 +217,6 @@ function updatePaginationControls() {
         .catch(error => console.error('Error fetching total problems:', error));
 }
 
-function toggleNoteContainer(container) {
-    container.style.display = container.style.display === 'flex' ? 'none' : 'flex';
-}
-
-function getProblemNote(problem) {
-    const notes = JSON.parse(localStorage.getItem('notes') || '{}');
-    const noteKey = `${problem.contestId}-${problem.index}`;
-    return notes[noteKey] || '';
-}
-
-function saveNote(problem, note) {
-    const notes = JSON.parse(localStorage.getItem('notes') || '{}');
-    const noteKey = `${problem.contestId}-${problem.index}`;
-    notes[noteKey] = note;
-    localStorage.setItem('notes', JSON.stringify(notes));
-}
-
-
 function changePage(direction) {
     currentPage += direction;
     console.log('Current Page:', currentPage);
@@ -259,22 +234,27 @@ function updatePaginationControls() {
     nextButton.classList.toggle('disabled', false); // Add logic to disable if last page
 }
 
-function toggleNoteContainer(container) {
-    container.style.display = container.style.display === 'flex' ? 'none' : 'flex';
+function toggleDarkMode() {
+    const body = document.body;
+    const isDarkMode = body.classList.toggle('dark-mode');
+    const toggleButton = document.getElementById('darkModeToggle');
+
+    toggleButton.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
+
+    // Store user preference in local storage
+    localStorage.setItem('darkMode', isDarkMode);
 }
 
-function getProblemNote(problem) {
-    const notes = JSON.parse(localStorage.getItem('notes') || '{}');
-    const noteKey = `${problem.contestId}-${problem.index}`;
-    return notes[noteKey] || '';
-}
+// Load user preference on page load
+document.addEventListener('DOMContentLoaded', () => {
+    const isDarkMode = JSON.parse(localStorage.getItem('darkMode'));
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        document.getElementById('darkModeToggle').textContent = 'Light Mode';
+    }
+});
 
-function saveNote(problem, note) {
-    const notes = JSON.parse(localStorage.getItem('notes') || '{}');
-    const noteKey = `${problem.contestId}-${problem.index}`;
-    notes[noteKey] = note;
-    localStorage.setItem('notes', JSON.stringify(notes));
-}
+
 </script>
 </body>
 </html>
