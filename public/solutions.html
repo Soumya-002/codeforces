@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submitted Solutions</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./Css/solutions.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Submitted Solutions</h1>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Enter Problem ID">
+            <button onclick="searchSolutions()">Search</button>
+        </div>
+        <div id="solutions"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script>
+        let allSolutions = [];
+
+        // Fetch solutions from the server
+        fetch('/get-solutions')
+            .then(response => response.json())
+            .then(data => {
+                allSolutions = data;
+                displaySolutions(allSolutions);
+            })
+            .catch(error => {
+                console.error('Error fetching solutions:', error);
+            });
+
+        function displaySolutions(solutions) {
+            const solutionsDiv = document.getElementById('solutions');
+            solutionsDiv.innerHTML = ''; // Clear previous solutions
+            if (solutions.length === 0) {
+                solutionsDiv.innerHTML = '<p>No solutions found.</p>';
+            } else {
+                solutions.forEach(solution => {
+                    const solutionElement = document.createElement('div');
+                    solutionElement.className = 'solution';
+                    solutionElement.innerHTML = `
+                        <h3>Problem ID: ${solution.problemId}</h3>
+                        <p><strong>User:</strong> ${solution.username}</p>
+                        <pre><code class="language-javascript">${Prism.highlight(solution.solutionText, Prism.languages.javascript, 'javascript')}</code></pre>
+                        <p><em>Submitted on: ${new Date(solution.date).toLocaleString()}</em></p>
+                    `;
+                    solutionsDiv.appendChild(solutionElement);
+                });
+            }
+        }
+
+        function searchSolutions() {
+            const searchInput = document.getElementById('searchInput').value.trim();
+            if (searchInput) {
+                const filteredSolutions = allSolutions.filter(solution => solution.problemId === searchInput);
+                displaySolutions(filteredSolutions);
+            } else {
+                displaySolutions(allSolutions); // Show all if search is empty
+            }
+        }
+    </script>
+</body>
+</html>

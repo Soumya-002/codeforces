@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit a Solution</title>
+    <link rel="stylesheet" href="./Css/submit.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Submit Solution</h1>
+        <form id="submitForm">
+            <input type="text" id="username" name="username" placeholder="Username" required>
+            <input type="text" id="problemId" name="problemId" placeholder="Problem ID" required>
+            <textarea id="solutionText" name="solutionText" placeholder="Paste your solution code here..." required
+    style="width: 100%; height: 200px; box-sizing: border-box;">
+</textarea>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('submitForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const formData = {
+                username: document.getElementById('username').value,
+                problemId: document.getElementById('problemId').value,
+                solutionText: document.getElementById('solutionText').value
+            };
+
+            fetch('/submit-solution', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Solution submitted successfully!');
+                } else {
+                    alert('Failed to submit solution: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

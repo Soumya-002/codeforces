@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codeforces Problems</title>
+    <link rel="stylesheet" href="./Css/index.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">Codeforces App</div>
+        <nav>
+            <a href="submit.html" class="active">Submit Problems</a>
+            <a href="solutions.html">View Solutions</a>
+        </nav>
+    </header>
+    <div class="container">
+                <h1>Codeforces Problems</h1>
+                <div class="input-container">
+                    <input type="text" id="username" placeholder="Enter your Codeforces username">
+                    <button onclick="loadProblems()">Load Problems</button>
+            </div>
+            <div class="tag-filter" id="tagFilterSection" style="display: none;">
+
+                <div class="filter-container">
+                    <select id="tagFilter" multiple>
+                        <option value="dp">Dynamic Programming</option>
+                        <option value="greedy">Greedy</option>
+                        <option value="math">Math</option>
+                        <option value="implementation">Implementation</option>
+                        <option value="graphs">Graphs</option>
+                        <option value="binary search">Binary Search</option>
+                        <option value="string">String</option>
+                        <option value="trees">Trees</option>
+
+                        <!-- Add more tags as needed -->
+                    </select>
+                    <button onclick="loadProblems()" style="margin-right: 35px;">Apply Filter</button>
+                </div>
+
+                <div class="rating-filter" id="ratingFilterSection" style="display: none;">
+                    <div class="filter-header">
+                        <label for="ratingFilter">Filter by Rating:</label>
+                    </div>
+                    <div class="filter-container">
+                        <select id="ratingFilter" multiple>
+                            <option value="1000">1000</option>
+                            <option value="1200">1200</option>
+                            <option value="1400">1400</option>
+                            <option value="1600">1600</option>
+                            <option value="1800">1800</option>
+                            <option value="2000">2000</option>
+                            <!-- Add more ratings as needed -->
+                        </select>
+                        <button onclick="loadProblems()">Apply Filter</button>
+                    </div>
+                </div>
+                
+        
+        <div id="problems"></div>
+        <div class="pagination">
+            <button id="prevPage" onclick="changePage(-1)">Previous</button>
+            <button id="nextPage" onclick="changePage(1)">Next</button>
+        </div>
+    </div>
+    <script>
+        let currentPage = 1;
+        const problemsPerPage = 50;
+        function loadProblems() {
+    const username = document.getElementById('username').value;
+    const selectedTags = Array.from(document.getElementById('tagFilter').selectedOptions).map(option => option.value);
+    const selectedRatings = Array.from(document.getElementById('ratingFilter').selectedOptions).map(option => option.value);
+
+    // Fetch problems with tags and ratings
+    fetch(`/problems?page=${currentPage}&limit=${problemsPerPage}&tags=${selectedTags.join(',')}&ratings=${selectedRatings.join(',')}`)
+    .then(response => response.json())
+    .then(problems => {
+        // console.log(problems);
+        if (!Array.isArray(problems.problems)) {
+            throw new Error('Problems response is not an array');
+        }
+
+        // Fetch solved problems
+        fetch('/solved-problems', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username })
+        })
+        .then(response => response.json())
+        .then(solvedProblems => {
+            // Log the solved problems to check the structure
+            console.log('Solved problems fetched:', solvedProblems);
+
+            if (!Array.isArray(solvedProblems)) {
+                throw new Error('Solved problems response is not an array');
+            }
+
+            // Process and display problems
+            const problemsContainer = document.getElementById('problems');
+            problemsContainer.innerHTML = '';
+            problems.problems.forEach(problem => {
+                const isSolved = solvedProblems.some(solved => 
+                    solved.contestId === problem.contestId && solved.index === problem.index
+                );
+
+                if (selectedTags.length === 0 || selectedTags.some(tag => problem.tags.includes(tag))) {
+                    if (selectedRatings.length === 0 || selectedRatings.includes(problem.rating)) {
+                        const problemElement = document.createElement('div');
+                        problemElement.className = 'problem' + (isSolved ? ' solved' : '');
+
+                        const problemLink = document.createElement('a');
+                        problemLink.href = `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`;
+                        problemLink.target = '_blank';
+                        problemLink.textContent = `${problem.contestId} - ${problem.name} (${problem.index})`;
+
+                        problemElement.appendChild(problemLink);
+                        problemsContainer.appendChild(problemElement);
+                    }
+                }
+            });
+
+            // Show the filter section
+            document.getElementById('tagFilterSection').style.display = 'block';
+            document.getElementById('ratingFilterSection').style.display = 'block';
+
+            updatePaginationControls();
+        })
+        .catch(error => console.error('Error fetching solved problems:', error));
+    })
+    .catch(error => console.error('Error fetching problems:', error));
+}
+
+
+
+function displayProblems(problems, solvedProblems) {
+    const problemsContainer = document.getElementById('problems');
+    problemsContainer.innerHTML = ''; // Clear existing problems
+
+    problems.forEach(problem => {
+        const isSolved = solvedProblems.some(solved => 
+            solved.contestId === problem.contestId && solved.index === problem.index
+        );
+
+        const problemElement = document.createElement('div');
+        problemElement.className = 'problem' + (isSolved ? ' solved' : '');
+
+        const problemLink = document.createElement('a');
+        problemLink.href = `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`;
+        problemLink.target = '_blank';
+        problemLink.textContent = `${problem.contestId} - ${problem.name} (${problem.index})`;
+
+        const noteIcon = document.createElement('span');
+        noteIcon.className = 'icon note';
+        noteIcon.innerHTML = '📝';
+        noteIcon.onclick = () => toggleNoteContainer(noteContainer);
+
+        const noteContainer = document.createElement('div');
+        noteContainer.className = 'note-container';
+        noteContainer.style.display = 'none'; // Initially hidden
+        const noteTextarea = document.createElement('textarea');
+        noteTextarea.value = getProblemNote(problem);
+        const saveNoteButton = document.createElement('button');
+        saveNoteButton.textContent = 'Save';
+        saveNoteButton.onclick = () => saveNote(problem, noteTextarea.value);
+
+        noteContainer.appendChild(noteTextarea);
+        noteContainer.appendChild(saveNoteButton);
+
+        problemElement.appendChild(problemLink);
+        problemElement.appendChild(noteIcon);
+        problemElement.appendChild(noteContainer);
+
+        problemsContainer.appendChild(problemElement);
+    });
+}
+
+function filterByTag() {
+    const selectedTags = Array.from(document.querySelectorAll('.tag.selected')).map(tag => tag.dataset.tag);
+    console.log('Selected tag:', selectedTags);
+
+    const username = document.getElementById('username').value;
+    const url = selectedTags ? `/problems?tag=${selectedTags}&page=${currentPage}&limit=${problemsPerPage}` : `/problems?page=${currentPage}&limit=${problemsPerPage}`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(fetchedProblems => {
+            problems = fetchedProblems;
+            console.log('Problems fetched:', problems);
+            return fetch('/solved-problems', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username })
+            });
+        })
+        .then(response => response.json())
+        .then(solvedProblems => {
+            if (!Array.isArray(solvedProblems)) {
+                console.log(solvedProblems);
+                throw new Error('Solved problems response is not an array');       
+            }
+            displayProblems(problems, solvedProblems);
+            updatePaginationControls();
+        })
+        .catch(error => console.error('Error fetching data:', error));
+}
+
+
+function updatePaginationControls() {
+    // Fetch the total number of problems for correct pagination handling
+    fetch('/total-problems')
+        .then(response => response.json())
+        .then(total => {
+            const totalPages = Math.ceil(total / problemsPerPage);
+            const prevButton = document.getElementById('prevPage');
+            const nextButton = document.getElementById('nextPage');
+            
+            prevButton.disabled = currentPage <= 1;
+            nextButton.disabled = currentPage >= totalPages;
+        })
+        .catch(error => console.error('Error fetching total problems:', error));
+}
+
+function toggleNoteContainer(container) {
+    container.style.display = container.style.display === 'flex' ? 'none' : 'flex';
+}
+
+function getProblemNote(problem) {
+    const notes = JSON.parse(localStorage.getItem('notes') || '{}');
+    const noteKey = `${problem.contestId}-${problem.index}`;
+    return notes[noteKey] || '';
+}
+
+function saveNote(problem, note) {
+    const notes = JSON.parse(localStorage.getItem('notes') || '{}');
+    const noteKey = `${problem.contestId}-${problem.index}`;
+    notes[noteKey] = note;
+    localStorage.setItem('notes', JSON.stringify(notes));
+}
+
+
+function changePage(direction) {
+    currentPage += direction;
+    console.log('Current Page:', currentPage);
+    if (currentPage < 1) currentPage = 1; // Prevent going to page 0 or negative
+    loadProblems();
+}
+
+function updatePaginationControls() {
+    const prevButton = document.getElementById('prevPage');
+    const nextButton = document.getElementById('nextPage');
+    
+    prevButton.classList.toggle('disabled', currentPage === 1);
+    // Assuming you can determine the last page somehow. 
+    // This could be done if the total number of problems is known.
+    nextButton.classList.toggle('disabled', false); // Add logic to disable if last page
+}
+
+function toggleNoteContainer(container) {
+    container.style.display = container.style.display === 'flex' ? 'none' : 'flex';
+}
+
+function getProblemNote(problem) {
+    const notes = JSON.parse(localStorage.getItem('notes') || '{}');
+    const noteKey = `${problem.contestId}-${problem.index}`;
+    return notes[noteKey] || '';
+}
+
+function saveNote(problem, note) {
+    const notes = JSON.parse(localStorage.getItem('notes') || '{}');
+    const noteKey = `${problem.contestId}-${problem.index}`;
+    notes[noteKey] = note;
+    localStorage.setItem('notes', JSON.stringify(notes));
+}
+</script>
+</body>
+</html>
