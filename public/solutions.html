@@ -4,11 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submitted Solutions</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="./Css/solutions.css">
+    <link rel="stylesheet" href="./Css/nav.css">
+    
 </head>
 <body>
+    <header class="header">
+        <div class="main">
+            <img src="logo.svg" alt="">
+            <a href="index.html" class="logo" style="text-decoration: none;">CodeCrate</a>
+        </div>
+        <nav>
+            <a href="submit.html">Submit Problems</a>
+            <a href="solutions.html">View Solutions</a>
+            <a href="recommend.html">Recommended Problems</a>
+            <a href="contest.html">Future Contest</a>
+            <a href="favourite.html">Favorites</a>
+        </nav>
+        <button onclick="toggleDarkMode()" id="darkModeToggle">Dark Mode</button>
+    </header>
     <div class="container">
         <h1>Submitted Solutions</h1>
         <div class="search-container">
@@ -24,7 +41,7 @@
         let allSolutions = [];
 
 // Fetch solutions from the server
-fetch('/get-solutions')
+fetch('/solutions')
     .then(response => response.json())
     .then(data => {
         allSolutions = data;
@@ -64,7 +81,7 @@ function displaySolutions(solutions) {
 }
 
 function likeSolution(solutionId) {
-    fetch(`/like-solution/${solutionId}`, {
+    fetch(`/solutions/like/${solutionId}`, {
         method: 'POST',
     })
     .then(response => response.json())
@@ -79,13 +96,13 @@ function likeSolution(solutionId) {
         console.error('Error liking solution:', error);
 
         // Log the response text for debugging
-        fetch(`/like-solution/${solutionId}`, { method: 'POST' })
+        fetch(`/solutions/like/${solutionId}`, { method: 'POST' })
             .then(response => response.text())
             .then(text => console.error('Response:', text));
     });
 }
 function dislikeSolution(solutionId) {
-    fetch(`/dislike-solution/${solutionId}`, {
+    fetch(`/solutions/dislike/${solutionId}`, {
         method: 'POST',
     })
     .then(response => response.json())
@@ -107,7 +124,7 @@ function searchSolutions() {
         displaySolutions(allSolutions); // Show all if search is empty
     }
 }
-
     </script>
+    <script src="darkmode.js"></script>
 </body>
 </html>

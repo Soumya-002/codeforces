@@ -4,20 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recommended Problems</title>
-    <link rel="stylesheet" href="./Css/index.css">
     <link rel="stylesheet" href="./Css/recommend.css">
+    <link rel="stylesheet" href="./Css/index.css">
+    <link rel="stylesheet" href="./Css/nav.css">
+
+
 </head>
 <body>
     <header class="header">
-        <a href="index.html" class="logo" style="text-decoration: none;">Codeforces App</a>
+        <div class="main">
+            <img src="logo.svg" alt="">
+            <a href="index.html" class="logo" style="text-decoration: none;">CodeCrate</a>
+        </div>
         <nav>
-            <a href="submit.html" class="active">Submit Problems</a>
-            <a href="solutions.html" class="active">View Solutions</a>
+            <a href="submit.html">Submit Problems</a>
+            <a href="solutions.html">View Solutions</a>
+            <a href="recommend.html">Recommended Problems</a>
+            <a href="contest.html">Future Contest</a>
+            <a href="favourite.html">Favorites</a>
         </nav>
         <button onclick="toggleDarkMode()" id="darkModeToggle">Dark Mode</button>
     </header>
     <h1>Recommended Problems</h1>
-    <input type="text" id="username" placeholder="Enter your Codeforces username">
+    <input type="text" id="username" placeholder="Enter your Codeforces username"  style="height: 30px;">
     <button onclick="getRecommendations()">Get Recommendations</button>
     <ul id="problemList" class="problem-list"></ul>
 
@@ -58,5 +67,7 @@
                 });
         }
     </script>
+    <script src="darkmode.js"></script>
+
 </body>
 </html>

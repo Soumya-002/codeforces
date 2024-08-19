@@ -4,17 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Favorite Problems</title>
+    <link rel="stylesheet" href="./Css/nav.css">
     <link rel="stylesheet" href="./Css/index.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 </head>
 <body>
     <header class="header">
-        <a href="index.html" class="logo" style="text-decoration: none;">Codeforces App</a>
+        <div class="main">
+            <img src="logo.svg" alt="">
+            <a href="index.html" class="logo" style="text-decoration: none;">CodeCrate</a>
+        </div>
         <nav>
-            <a href="index.html" id="homeButton">Home</a>
             <a href="submit.html">Submit Problems</a>
             <a href="solutions.html">View Solutions</a>
-            <a href="recommend.html">Recommend Problems</a>
-            <a href="contest.html">Future Contests</a>
+            <a href="recommend.html">Recommended Problems</a>
+            <a href="contest.html">Future Contest</a>
+            <a href="favourite.html">Favorites</a>
         </nav>
         <button onclick="toggleDarkMode()" id="darkModeToggle">Dark Mode</button>
     </header>
@@ -23,19 +30,6 @@
         <div id="favorites"></div>
     </div>
     <script>
-document.getElementById('homeButton').addEventListener('click', function() {
-    // Reset to the first page
-    currentPage = 1;
-
-    // Optionally, reset filters
-    document.getElementById('tagFilter').selectedIndex = -1;
-    document.getElementById('ratingFilter').selectedIndex = -1;
-
-    // Load problems
-    loadProblems();
-});
-
-
         document.addEventListener('DOMContentLoaded', loadFavorites);
 
         function loadFavorites() {
@@ -45,7 +39,7 @@ document.getElementById('homeButton').addEventListener('click', function() {
                 return;
             }
 
-            fetch(`/get-favorites/${username}`)
+            fetch(`/favorites/get-favorites/${username}`)
                 .then(response => response.json())
                 .then(favorites => {
                     const favoritesContainer = document.getElementById('favorites');
@@ -60,11 +54,40 @@ document.getElementById('homeButton').addEventListener('click', function() {
                         problemLink.target = '_blank';
                         problemLink.textContent = `${problem.contestId} - ${problem.name} (${problem.index})`;
 
+                        const deleteIcon = document.createElement('i');
+                        deleteIcon.className = 'fas fa-trash'; // Font Awesome trash icon
+                        deleteIcon.style.cursor = 'pointer'; // Change cursor to pointer on hover
+                        deleteIcon.onclick = () => removeFavorite(problem);
+
+
                         problemElement.appendChild(problemLink);
+                        problemElement.appendChild(deleteIcon);
                         favoritesContainer.appendChild(problemElement);
                     });
                 })
                 .catch(error => console.error('Error fetching favorite problems:', error));
+        }
+
+        function removeFavorite(problem) {
+            const username = localStorage.getItem('username');
+            if (!username) {
+                alert('No username found. Please go back and enter your username.');
+                return;
+            }
+
+            fetch('/favorites', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, problem })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                loadFavorites(); // Reload the favorites list after removing
+            })
+            .catch(error => console.error('Error removing favorite:', error));
         }
 
         function toggleDarkMode() {
@@ -84,5 +107,7 @@ document.getElementById('homeButton').addEventListener('click', function() {
             }
         });
     </script>
+    <script src="darkmode.js"></script>
+    
 </body>
 </html>

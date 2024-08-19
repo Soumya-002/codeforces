@@ -5,11 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Codeforces Problems</title>
     <link rel="stylesheet" href="./Css/index.css">
+    <link rel="stylesheet" href="./Css/nav.css">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> <!-- FontAwesome for star icons -->
 </head>
 <body>
     <header class="header">
-        <a href="index.html" class="logo" style="text-decoration: none;">Codeforces App</a>
+        <div class="main">
+            <img src="logo.svg" alt="">
+            <a href="index.html" class="logo" style="text-decoration: none;">CodeCrate</a>
+        </div>
         <nav>
             <a href="submit.html">Submit Problems</a>
             <a href="solutions.html">View Solutions</a>
@@ -22,7 +27,7 @@
     <div class="container">
         <h1>Codeforces Problems</h1>
         <div class="input-container">
-            <input type="text" id="username" placeholder="Enter your Codeforces username">
+            <input type="text" id="username" placeholder="Enter your Codeforces username"  style="height: 30px;">
             <button onclick="loadProblems()">Load Problems</button>
         </div>
         <div class="tag-filter hidden" id="tagFilterSection">
@@ -146,7 +151,7 @@
         function toggleFavorite(problem) {
     const username = document.getElementById('username').value; // Assume username is stored or available
 
-    fetch('/toggle-favorite', {
+    fetch('/favorites', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -178,7 +183,6 @@
     .catch(error => console.error('Error toggling favorite:', error));
 }
 
-
         function updatePaginationControls() {
             fetch('/total-problems')
                 .then(response => response.json())
@@ -208,24 +212,8 @@
 
 // Call this function after the user enters their username
 document.getElementById('username').addEventListener('change', storeUsername);
-
-
-        function toggleDarkMode() {
-            const body = document.body;
-            const isDarkMode = body.classList.toggle('dark-mode');
-            const toggleButton = document.getElementById('darkModeToggle');
-
-            toggleButton.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
-            localStorage.setItem('darkMode', isDarkMode);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const isDarkMode = JSON.parse(localStorage.getItem('darkMode'));
-            if (isDarkMode) {
-                document.body.classList.add('dark-mode');
-                document.getElementById('darkModeToggle').textContent = 'Light Mode';
-            }
-        });
     </script>
+    <script src="darkmode.js"></script>
+
 </body>
 </html>
