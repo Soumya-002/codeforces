@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favorite Problems</title>
+    <link rel="stylesheet" href="./Css/index.css">
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo" style="text-decoration: none;">Codeforces App</a>
+        <nav>
+            <a href="index.html" id="homeButton">Home</a>
+            <a href="submit.html">Submit Problems</a>
+            <a href="solutions.html">View Solutions</a>
+            <a href="recommend.html">Recommend Problems</a>
+            <a href="contest.html">Future Contests</a>
+        </nav>
+        <button onclick="toggleDarkMode()" id="darkModeToggle">Dark Mode</button>
+    </header>
+    <div class="container">
+        <h1>Favorite Problems</h1>
+        <div id="favorites"></div>
+    </div>
+    <script>
+document.getElementById('homeButton').addEventListener('click', function() {
+    // Reset to the first page
+    currentPage = 1;
+
+    // Optionally, reset filters
+    document.getElementById('tagFilter').selectedIndex = -1;
+    document.getElementById('ratingFilter').selectedIndex = -1;
+
+    // Load problems
+    loadProblems();
+});
+
+
+        document.addEventListener('DOMContentLoaded', loadFavorites);
+
+        function loadFavorites() {
+            const username = localStorage.getItem('username');
+            if (!username) {
+                alert('No username found. Please go back and enter your username.');
+                return;
+            }
+
+            fetch(`/get-favorites/${username}`)
+                .then(response => response.json())
+                .then(favorites => {
+                    const favoritesContainer = document.getElementById('favorites');
+                    favoritesContainer.innerHTML = '';
+
+                    favorites.forEach(problem => {
+                        const problemElement = document.createElement('div');
+                        problemElement.className = 'problem';
+
+                        const problemLink = document.createElement('a');
+                        problemLink.href = `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`;
+                        problemLink.target = '_blank';
+                        problemLink.textContent = `${problem.contestId} - ${problem.name} (${problem.index})`;
+
+                        problemElement.appendChild(problemLink);
+                        favoritesContainer.appendChild(problemElement);
+                    });
+                })
+                .catch(error => console.error('Error fetching favorite problems:', error));
+        }
+
+        function toggleDarkMode() {
+            const body = document.body;
+            const isDarkMode = body.classList.toggle('dark-mode');
+            const toggleButton = document.getElementById('darkModeToggle');
+
+            toggleButton.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
+            localStorage.setItem('darkMode', isDarkMode);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const isDarkMode = JSON.parse(localStorage.getItem('darkMode'));
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('darkModeToggle').textContent = 'Light Mode';
+            }
+        });
+    </script>
+</body>
+</html>

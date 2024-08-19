@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommended Problems</title>
+    <link rel="stylesheet" href="./Css/index.css">
+    <link rel="stylesheet" href="./Css/recommend.css">
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo" style="text-decoration: none;">Codeforces App</a>
+        <nav>
+            <a href="submit.html" class="active">Submit Problems</a>
+            <a href="solutions.html" class="active">View Solutions</a>
+        </nav>
+        <button onclick="toggleDarkMode()" id="darkModeToggle">Dark Mode</button>
+    </header>
+    <h1>Recommended Problems</h1>
+    <input type="text" id="username" placeholder="Enter your Codeforces username">
+    <button onclick="getRecommendations()">Get Recommendations</button>
+    <ul id="problemList" class="problem-list"></ul>
+
+    <script>
+        function getRecommendations() {
+            const username = document.getElementById('username').value;
+
+            if (!username) {
+                alert('Please enter a username');
+                return;
+            }
+
+            fetch(`/recommendations?username=${username}`)
+                .then(response => response.json())
+                .then(problems => {
+                    const problemList = document.getElementById('problemList');
+                    problemList.innerHTML = '';
+
+                    if (problems.length === 0) {
+                        problemList.innerHTML = '<li>No recommendations found.</li>';
+                        return;
+                    }
+
+                    problems.forEach(problem => {
+                        const problemItem = document.createElement('li');
+                        problemItem.className = 'problem-item';
+                        problemItem.innerHTML = `
+                            <a href="https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}" target="_blank">
+                                ${problem.contestId} - ${problem.name} (${problem.index}) - Rating: ${problem.rating}
+                            </a>
+                        `;
+                        problemList.appendChild(problemItem);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching recommendations:', error);
+                    alert('Error fetching recommendations');
+                });
+        }
+    </script>
+</body>
+</html>

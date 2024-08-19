@@ -47,14 +47,13 @@ function displaySolutions(solutions) {
                 <h3>Problem ID: ${solution.problemId}</h3>
                 <p><strong>User:</strong> ${solution.username}</p>
                 <pre><code class="language-javascript">${Prism.highlight(solution.solutionText, Prism.languages.javascript, 'javascript')}</code></pre>
-                <p><em>Submitted on: ${new Date(solution.date).toLocaleString()}</em></p>
-                <div class="like-section" style="padding-right: 10px;">
+                <div class="like-section" style="padding: 10px;">
                     <i class="fa fa-thumbs-up like-icon" onclick="likeSolution('${solution._id}')"></i>
                     <span style="padding-right: 10px;"id="like-count-${solution._id}">${solution.likes || 0} Likes</span>
                     <i class="fa fa-thumbs-down dislike-icon" onclick="dislikeSolution('${solution._id}')"></i>
                     <span id="dislike-count-${solution._id}">${solution.dislikes || 0} Dislikes</span>
                 </div>
-
+                <p><em>Submitted on: ${new Date(solution.date).toLocaleString()}</em></p>
                 
             `;
             solutionsDiv.appendChild(solutionElement);

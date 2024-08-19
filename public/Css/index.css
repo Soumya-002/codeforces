@@ -81,15 +81,6 @@ h1 {
     text-decoration: none;
     padding: 10px 15px;
     border-radius: 5px;
-    transition: background-color 0.3s, color 0.3s;
-}
-.header nav a:hover {
-    background-color: #0056b3; /* Darker blue */
-    color: #340caf;
-}
-.header nav a.active {
-    background-color: #0056b3; /* Highlight active link */
-    color: #f0f0f0;
 }
 .pagination {
     display: flex;
@@ -126,6 +117,7 @@ h1 {
     scrollbar-width: thin;
 }
 #ratingFilter{
+    height: 115px;
     width: 85px;
     padding: 10px;
     scrollbar-width: thin;
@@ -134,17 +126,13 @@ h1 {
     padding: 5px;
 }
 /* Hide the filter sections initially */
-#tagFilterSection,
-#ratingFilterSection {
+.hidden{
     display: none;
 }
-
-/* Show filter sections when problems are loaded */
-.show-filters #tagFilterSection,
-.show-filters #ratingFilterSection {
+.show-filters{
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-evenly;
 }
 .btn{
     margin: 10px 0px;
