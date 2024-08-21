@@ -1,0 +1,227 @@
+.ratings-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.rating-btn {
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.rating-legendary {
+    background-color: #ff0000;
+}
+
+.rating-grandmaster {
+    background-color: #ff6600;
+}
+
+.rating-master {
+    background-color: #8000ff;
+}
+
+.rating-expert {
+    background-color: #00aa00;
+}
+
+.rating-specialist {
+    background-color: #03a89e;
+}
+
+.rating-pupil {
+    background-color: #007bff;
+}
+
+.rating-newbie {
+    background-color: #808080;
+}
+
+.rating-btn:hover {
+    transform: translateY(-3px);
+    /* Slight lift on hover */
+    filter: brightness(1.2);
+    /* Brighten the color on hover */
+}
+
+
+.problem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    margin-left: 15px;
+
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.problem a {
+    font-size: 16px;
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.problem a:hover {
+    text-decoration: underline;
+}
+
+.tags-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.tags-containers {
+    display: flex;
+    justify-content: center;
+    margin-top: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.tag {
+    display: inline-block;
+    background-color: #e0e0e0;
+    color: #333;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-right: 5px;
+    margin-bottom: 3px;
+}
+
+.tag-btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
+}
+
+.tag-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-3px);
+    /* Slight lift on hover */
+    box-shadow: 0 6px 8px rgba(0, 123, 255, 0.3);
+}
+
+.tag-btn.active {
+    background-color: #0056b3;
+    box-shadow: 0 6px 8px rgba(0, 123, 255, 0.4);
+    transform: translateY(-3px);
+}
+
+.rating {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    display: inline-block;
+    margin-top: 5px;
+    width: 100px;
+}
+
+.rating-legendary {
+    color: #ff0000;
+    border: 2px solid #ff0000;
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+.rating-grandmaster {
+    color: #ff6600;
+    border: 2px solid #ff6600;
+    background-color: rgba(255, 102, 0, 0.1);
+}
+
+.rating-master {
+    color: #8000ff;
+    border: 2px solid #8000ff;
+    background-color: rgba(128, 0, 255, 0.1);
+}
+
+.rating-expert {
+    color: #007bff;
+    border: 2px solid #007bff;
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.rating-specialist {
+    color: #16d3c6;
+    border: 2px solid #03a89e;
+    background-color: rgba(3, 168, 158, 0.1);
+}
+
+.rating-pupil {
+    color: #00aa00;
+    border: 2px solid #00aa00;
+    background-color: rgba(0, 170, 0, 0.1);
+}
+
+.rating-newbie {
+    color: #808080;
+    border: 2px solid #808080;
+    background-color: rgba(128, 128, 128, 0.1);
+}
+
+#toggle-tags-btn {
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #555;
+    color: #fff;
+    border: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+#toggle-tags-btn:hover {
+    transform: translateY(-3px);
+    background-color: #333;
+}
+#pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#pagination button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 5px;
+    background-color: #555;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#pagination button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+#pagination span {
+    font-size: 16px;
+    font-weight: bold;
+}

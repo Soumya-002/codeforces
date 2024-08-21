@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,10 @@
     <link rel="stylesheet" href="./Css/index.css">
     <link rel="stylesheet" href="./Css/nav.css">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> <!-- FontAwesome for star icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- FontAwesome for star icons -->
 </head>
+
 <body>
     <header class="header">
         <div class="main">
@@ -16,6 +19,7 @@
             <a href="index.html" class="logo" style="text-decoration: none;">CodeCrate</a>
         </div>
         <nav>
+            <a href="home.html">Home</a>
             <a href="submit.html">Submit Problems</a>
             <a href="solutions.html">View Solutions</a>
             <a href="recommend.html">Recommended Problems</a>
@@ -27,38 +31,38 @@
     <div class="container">
         <h1>Codeforces Problems</h1>
         <div class="input-container">
-            <input type="text" id="username" placeholder="Enter your Codeforces username"  style="height: 30px;">
+            <input type="text" id="username" placeholder="Enter your Codeforces username" style="height: 30px;">
             <button onclick="loadProblems()">Load Problems</button>
         </div>
         <div class="tag-filter hidden" id="tagFilterSection">
-    <div class="filter-container" class="hidden">
-        <select id="tagFilter" multiple>
-            <option value="dp">Dynamic Programming</option>
-            <option value="greedy">Greedy</option>
-            <option value="math">Math</option>
-            <option value="implementation">Implementation</option>
-            <option value="graphs">Graphs</option>
-            <option value="binary search">Binary Search</option>
-            <option value="string">String</option>
-            <option value="trees">Trees</option>
-        </select>
-        <button onclick="loadProblems()" class="btn">Filter by Tags</button>
-    </div>
+            <div class="filter-container" class="hidden">
+                <select id="tagFilter" multiple>
+                    <option value="dp">Dynamic Programming</option>
+                    <option value="greedy">Greedy</option>
+                    <option value="math">Math</option>
+                    <option value="implementation">Implementation</option>
+                    <option value="graphs">Graphs</option>
+                    <option value="binary search">Binary Search</option>
+                    <option value="string">String</option>
+                    <option value="trees">Trees</option>
+                </select>
+                <button onclick="loadProblems()" class="btn">Filter by Tags</button>
+            </div>
 
-<div class="rating-filter hidden" id="ratingFilterSection">
-    <div class="filter-container">
-        <select id="ratingFilter" class="tagFilter" multiple>
-            <option value="1000">1000</option>
-            <option value="1200">1200</option>
-            <option value="1400">1400</option>
-            <option value="1600">1600</option>
-            <option value="1800">1800</option>
-            <option value="2000">2000</option>
-        </select>
-        <button onclick="loadProblems()" class="btn">Filter by Rating</button>
+            <div class="rating-filter hidden" id="ratingFilterSection">
+                <div class="filter-container">
+                    <select id="ratingFilter" class="tagFilter" multiple>
+                        <option value="1000">1000</option>
+                        <option value="1200">1200</option>
+                        <option value="1400">1400</option>
+                        <option value="1600">1600</option>
+                        <option value="1800">1800</option>
+                        <option value="2000">2000</option>
+                    </select>
+                    <button onclick="loadProblems()" class="btn">Filter by Rating</button>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
         <div id="problems"></div>
         <div class="pagination">
@@ -66,154 +70,155 @@
             <button id="nextPage" onclick="changePage(1)">Next</button>
         </div>
 
-    <script>
-        let currentPage = 1;
-        const problemsPerPage = 50;
+        <script>
+            let currentPage = 1;
+            const problemsPerPage = 50;
 
-        function loadProblems() {
-    const username = document.getElementById('username').value;
-    const selectedTags = Array.from(document.getElementById('tagFilter').selectedOptions).map(option => option.value);
-    const selectedRatings = Array.from(document.getElementById('ratingFilter').selectedOptions).map(option => option.value);
+            function loadProblems() {
+                const username = document.getElementById('username').value;
+                const selectedTags = Array.from(document.getElementById('tagFilter').selectedOptions).map(option => option.value);
+                const selectedRatings = Array.from(document.getElementById('ratingFilter').selectedOptions).map(option => option.value);
 
-    // Show filters after problems are successfully loaded
-    const tagFilterSection = document.getElementById('tagFilterSection');
-    const ratingFilterSection = document.getElementById('ratingFilterSection');
+                // Show filters after problems are successfully loaded
+                const tagFilterSection = document.getElementById('tagFilterSection');
+                const ratingFilterSection = document.getElementById('ratingFilterSection');
 
-    fetch(`/problems?page=${currentPage}&limit=${problemsPerPage}&tags=${selectedTags.join(',')}&ratings=${selectedRatings.join(',')}`)
-        .then(response => response.json())
-        .then(problems => {
-            if (!Array.isArray(problems.problems)) {
-                throw new Error('Problems response is not an array');
-            }
-
-            fetch('/solved-problems', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username })
-            })
-            .then(response => response.json())
-            .then(solvedProblems => {
-                if (!Array.isArray(solvedProblems)) {
-                    throw new Error('Solved problems response is not an array');
-                }
-
-                const problemsContainer = document.getElementById('problems');
-                problemsContainer.innerHTML = '';
-
-                if (problems.problems.length === 0) {
-                    problemsContainer.innerHTML = '<p>No problems found.</p>';
-                } else {
-                    problems.problems.forEach(problem => {
-                        const isSolved = solvedProblems.some(solved => 
-                            solved.contestId === problem.contestId && solved.index === problem.index
-                        );
-
-                        if ((selectedTags.length === 0 || selectedTags.some(tag => problem.tags.includes(tag))) &&
-                            (selectedRatings.length === 0 || selectedRatings.includes(String(problem.rating)))) {
-
-                            const problemElement = document.createElement('div');
-                            problemElement.className = 'problem' + (isSolved ? ' solved' : '');
-
-                            const problemLink = document.createElement('a');
-                            problemLink.href = `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`;
-                            problemLink.target = '_blank';
-                            problemLink.textContent = `${problem.contestId} - ${problem.name} (${problem.index})`;
-
-                            // Favorite icon
-                            const favoriteIcon = document.createElement('i');
-                            favoriteIcon.className = 'fa fa-star-o'; // Default to not favorite
-                            favoriteIcon.id = `favorite-icon-${problem.contestId}-${problem.index}`;
-                            favoriteIcon.onclick = () => toggleFavorite(problem);
-
-                            // Append elements
-                            problemElement.appendChild(problemLink);
-                            problemElement.appendChild(favoriteIcon);
-                            problemsContainer.appendChild(problemElement);
+                fetch(`/problems?page=${currentPage}&limit=${problemsPerPage}&tags=${selectedTags.join(',')}&ratings=${selectedRatings.join(',')}`)
+                    .then(response => response.json())
+                    .then(problems => {
+                        if (!Array.isArray(problems.problems)) {
+                            throw new Error('Problems response is not an array');
                         }
-                    });
 
-                    updatePaginationControls();
+                        fetch('/solved-problems', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ username })
+                        })
+                            .then(response => response.json())
+                            .then(solvedProblems => {
+                                if (!Array.isArray(solvedProblems)) {
+                                    throw new Error('Solved problems response is not an array');
+                                }
 
-                    // Show filters after problems are successfully loaded
-                    tagFilterSection.classList.remove('hidden');
-                    ratingFilterSection.classList.remove('hidden');
-                    tagFilterSection.classList.add('show-filters');
-                }
-            })
-            .catch(error => console.error('Error fetching solved problems:', error));
-        })
-        .catch(error => console.error('Error fetching problems:', error));
-}
+                                const problemsContainer = document.getElementById('problems');
+                                problemsContainer.innerHTML = '';
 
+                                if (problems.problems.length === 0) {
+                                    problemsContainer.innerHTML = '<p>No problems found.</p>';
+                                } else {
+                                    problems.problems.forEach(problem => {
+                                        const isSolved = solvedProblems.some(solved =>
+                                            solved.contestId === problem.contestId && solved.index === problem.index
+                                        );
 
-        function toggleFavorite(problem) {
-    const username = document.getElementById('username').value; // Assume username is stored or available
+                                        if ((selectedTags.length === 0 || selectedTags.some(tag => problem.tags.includes(tag))) &&
+                                            (selectedRatings.length === 0 || selectedRatings.includes(String(problem.rating)))) {
 
-    fetch('/favorites', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            username: username,
-            problem: {
-                contestId: problem.contestId,
-                index: problem.index,
-                name: problem.name,
-                tags: problem.tags,
-                rating: problem.rating
+                                            const problemElement = document.createElement('div');
+                                            problemElement.className = 'problem' + (isSolved ? ' solved' : '');
+
+                                            const problemLink = document.createElement('a');
+                                            problemLink.href = `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`;
+                                            problemLink.target = '_blank';
+                                            problemLink.textContent = `${problem.contestId} - ${problem.name} (${problem.index})`;
+
+                                            // Favorite icon
+                                            const favoriteIcon = document.createElement('i');
+                                            favoriteIcon.className = 'fa fa-star-o'; // Default to not favorite
+                                            favoriteIcon.id = `favorite-icon-${problem.contestId}-${problem.index}`;
+                                            favoriteIcon.onclick = () => toggleFavorite(problem);
+
+                                            // Append elements
+                                            problemElement.appendChild(problemLink);
+                                            problemElement.appendChild(favoriteIcon);
+                                            problemsContainer.appendChild(problemElement);
+                                        }
+                                    });
+
+                                    updatePaginationControls();
+
+                                    // Show filters after problems are successfully loaded
+                                    tagFilterSection.classList.remove('hidden');
+                                    ratingFilterSection.classList.remove('hidden');
+                                    tagFilterSection.classList.add('show-filters');
+                                }
+                            })
+                            .catch(error => console.error('Error fetching solved problems:', error));
+                    })
+                    .catch(error => console.error('Error fetching problems:', error));
             }
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data.message);
-        // Update the UI to reflect the favorite status change
-        const favoriteIcon = document.getElementById(`favorite-icon-${problem.contestId}-${problem.index}`);
-        if (favoriteIcon.classList.contains('fa-star-o')) {
-            favoriteIcon.classList.remove('fa-star-o');
-            favoriteIcon.classList.add('fa-star');
-        } else {
-            favoriteIcon.classList.remove('fa-star');
-            favoriteIcon.classList.add('fa-star-o');
-        }
-    })
-    .catch(error => console.error('Error toggling favorite:', error));
-}
 
-        function updatePaginationControls() {
-            fetch('/total-problems')
-                .then(response => response.json())
-                .then(total => {
-                    const totalPages = Math.ceil(total / problemsPerPage);
-                    const prevButton = document.getElementById('prevPage');
-                    const nextButton = document.getElementById('nextPage');
 
-                    prevButton.disabled = currentPage <= 1;
-                    nextButton.disabled = currentPage >= totalPages;
+            function toggleFavorite(problem) {
+                const username = document.getElementById('username').value; // Assume username is stored or available
+
+                fetch('/favorites', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        problem: {
+                            contestId: problem.contestId,
+                            index: problem.index,
+                            name: problem.name,
+                            tags: problem.tags,
+                            rating: problem.rating
+                        }
+                    })
                 })
-                .catch(error => console.error('Error fetching total problems:', error));
-        }
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data.message);
+                        // Update the UI to reflect the favorite status change
+                        const favoriteIcon = document.getElementById(`favorite-icon-${problem.contestId}-${problem.index}`);
+                        if (favoriteIcon.classList.contains('fa-star-o')) {
+                            favoriteIcon.classList.remove('fa-star-o');
+                            favoriteIcon.classList.add('fa-star');
+                        } else {
+                            favoriteIcon.classList.remove('fa-star');
+                            favoriteIcon.classList.add('fa-star-o');
+                        }
+                    })
+                    .catch(error => console.error('Error toggling favorite:', error));
+            }
 
-        function changePage(direction) {
-            currentPage += direction;
-            if (currentPage < 1) currentPage = 1; // Prevent going to page 0 or negative
-            loadProblems();
-        }
+            function updatePaginationControls() {
+                fetch('/total-problems')
+                    .then(response => response.json())
+                    .then(total => {
+                        const totalPages = Math.ceil(total / problemsPerPage);
+                        const prevButton = document.getElementById('prevPage');
+                        const nextButton = document.getElementById('nextPage');
 
-        function storeUsername() {
-    const username = document.getElementById('username').value;
-    if (username) {
-        localStorage.setItem('username', username);
-    }
-}
+                        prevButton.disabled = currentPage <= 1;
+                        nextButton.disabled = currentPage >= totalPages;
+                    })
+                    .catch(error => console.error('Error fetching total problems:', error));
+            }
 
-// Call this function after the user enters their username
-document.getElementById('username').addEventListener('change', storeUsername);
-    </script>
-    <script src="darkmode.js"></script>
+            function changePage(direction) {
+                currentPage += direction;
+                if (currentPage < 1) currentPage = 1; // Prevent going to page 0 or negative
+                loadProblems();
+            }
+
+            function storeUsername() {
+                const username = document.getElementById('username').value;
+                if (username) {
+                    localStorage.setItem('username', username);
+                }
+            }
+
+            // Call this function after the user enters their username
+            document.getElementById('username').addEventListener('change', storeUsername);
+        </script>
+        <script src="darkmode.js"></script>
 
 </body>
+
 </html>

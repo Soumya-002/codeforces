@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./Css/nav.css">
+    <link rel="stylesheet" href="./Css/home.css">
+    
+</head>
+
+<body>
+    <header class="header">
+        <div class="main">
+            <img src="logo.svg" alt="">
+            <a href="index.html" class="logo" style="text-decoration: none;">CodeCrate</a>
+        </div>
+        <nav>
+            <a href="home.html">Home</a>
+            <a href="submit.html">Submit Problems</a>
+            <a href="solutions.html">View Solutions</a>
+            <a href="recommend.html">Recommended Problems</a>
+            <a href="contest.html">Future Contest</a>
+            <a href="favourite.html">Favorites</a>
+        </nav>
+    </header>
+    <div class="filter-section" style="margin-top: 25px;">
+        <div class="tags-containers">
+            <button class="tag-btn" data-tag="dp">DP</button>
+            <button class="tag-btn" data-tag="strings">strings</button>
+            <button class="tag-btn" data-tag="graph">graph</button>
+            <button class="tag-btn" data-tag="binary search">binary search</button>
+            <button class="tag-btn" data-tag="trees">trees</button>
+            <button class="tag-btn" data-tag="sortings">sortings</button>
+            <button class="tag-btn" data-tag="bitmasks">bitmasks</button>
+            <button class="tag-btn" data-tag="greedy">Greedy</button>
+            <button class="tag-btn" data-tag="math">Math</button>
+            <!-- Add more buttons as needed -->
+        </div>
+        <div class="ratings-container">
+            <button class="rating-btn rating-newbie" data-rating="800">800</button>
+            <button class="rating-btn rating-newbie" data-rating="900">900</button>
+            <button class="rating-btn rating-newbie" data-rating="1000">1000</button>
+            <button class="rating-btn rating-newbie" data-rating="1100">1100</button>
+            <button class="rating-btn rating-pupil" data-rating="1200">1200</button>
+            <button class="rating-btn rating-pupil" data-rating="1300">1300</button>
+            <button class="rating-btn rating-specialist" data-rating="1400">1400</button>
+            <button class="rating-btn rating-specialist" data-rating="1500">1500</button>
+            <button class="rating-btn rating-expert" data-rating="1600">1600</button>
+            <button class="rating-btn rating-expert" data-rating="1700">1700</button>
+            <button class="rating-btn rating-master" data-rating="1800">1800</button>
+            <button class="rating-btn rating-master" data-rating="1900">1900</button>
+            <button class="rating-btn rating-master" data-rating="2000">2000</button>
+            <button class="rating-btn rating-grandmaster" data-rating="2400">2400</button>
+            <button class="rating-btn rating-legendary" data-rating="2500">2500</button>
+            <!-- Add more buttons as needed -->
+        </div>
+        <button id="toggle-tags-btn">Hide Tags</button>
+
+    </div>
+
+    <div id="problems" style="margin-top:20px ;"></div>
+    
+    </div>
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', () => {
+    const toggleTagsBtn = document.getElementById('toggle-tags-btn');
+    let tagsVisible = true;
+
+    // Apply rating classes to rating buttons
+    document.querySelectorAll('.rating-btn').forEach(button => {
+        const rating = parseInt(button.getAttribute('data-rating'), 10);
+        button.classList.add(`rating-${getRatingClass(rating)}`);
+    });
+
+    // Toggle tag visibility
+    toggleTagsBtn.addEventListener('click', () => {
+        const tagsContainers = document.querySelectorAll('.tags-container');
+
+        tagsContainers.forEach(container => {
+            container.style.display = tagsVisible ? 'none' : 'block';
+        });
+
+        // Update button text based on the current state
+        toggleTagsBtn.textContent = tagsVisible ? 'Show Tags' : 'Hide Tags';
+        tagsVisible = !tagsVisible;
+    });
+
+    const tagButtons = document.querySelectorAll('.tag-btn');
+    const ratingButtons = document.querySelectorAll('.rating-btn');
+
+    // Toggle active state on click
+    tagButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            button.classList.toggle('active');
+            filterProblems();
+        });
+    });
+
+    ratingButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            button.classList.toggle('active');
+            filterProblems();
+        });
+    });
+
+    function filterProblems() {
+        const activeTags = Array.from(document.querySelectorAll('.tag-btn.active')).map(btn => btn.getAttribute('data-tag'));
+        const activeRatings = Array.from(document.querySelectorAll('.rating-btn.active')).map(btn => btn.getAttribute('data-rating'));
+
+        console.log('Active Tags:', activeTags);
+        console.log('Active Ratings:', activeRatings);
+
+        fetch('/filter-problems', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                tags: activeTags,
+                ratings: activeRatings
+            })
+        })
+        .then(response => response.json())
+        .then(filteredProblems => {
+            console.log('Filtered Problems:', filteredProblems);
+            displayProblems(filteredProblems);
+        })
+        .catch(error => console.error('Error filtering problems:', error));
+    }
+
+    function displayProblems(problems) {
+        const problemsContainer = document.getElementById('problems');
+
+        if (!problemsContainer) {
+            console.error('Element with id "problems" not found.');
+            return;
+        }
+
+        problemsContainer.innerHTML = ''; // Clear previous problems
+
+        problems.forEach(problem => {
+            const problemElement = document.createElement('div');
+            problemElement.className = 'problem';
+
+            // Create problem link
+            const problemLink = document.createElement('a');
+            problemLink.href = `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`;
+            problemLink.target = '_blank';
+            problemLink.textContent = `${problem.contestId} - ${problem.name} (${problem.index})`;
+
+            // Create rating display
+            const ratingElement = document.createElement('span');
+            ratingElement.className = `rating rating-${getRatingClass(problem.rating)}`;
+            ratingElement.textContent = `Rating: ${problem.rating !== undefined ? problem.rating : 'N/A'}`;
+
+            // Create tags display
+            const tagsContainer = document.createElement('div');
+            tagsContainer.className = 'tags-container';
+
+            problem.tags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag';
+                tagElement.textContent = tag;
+                tagsContainer.appendChild(tagElement);
+            });
+
+            // Append the link, rating, and tags to the problem element
+            problemElement.appendChild(problemLink);
+            problemElement.appendChild(tagsContainer);
+            problemElement.appendChild(ratingElement);
+
+
+            // Append the problem element to the problems container
+            problemsContainer.appendChild(problemElement);
+        });
+    }
+
+    function getRatingClass(rating) {
+        if (rating >= 2400) return 'legendary';
+        if (rating >= 2100) return 'grandmaster';
+        if (rating >= 1900) return 'master';
+        if (rating >= 1600) return 'expert';
+        if (rating >= 1400) return 'specialist';
+        if (rating >= 1200) return 'pupil';
+        return 'newbie';
+    }
+});
+</Script>
+
+</body>
+
+</html>
