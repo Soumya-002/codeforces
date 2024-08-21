@@ -27,14 +27,14 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-let allProblems = [];
+let problems = [];
 
 function fetchAllProblems() {
     // Assuming you have an endpoint that fetches all problems
     fetch('https://codeforces.com/api/problemset.problems')
         .then(response => response.json())
         .then(data => {
-            allProblems = data.result.problems; // Adjust according to your API response structure
+            problems = data.result.problems; // Adjust according to your API response structure
         })
         .catch(error => console.error('Error fetching problems:', error));
 }
@@ -43,11 +43,10 @@ function fetchAllProblems() {
 fetchAllProblems();
 
 app.post('/filter-problems', (req, res) => {
-    const { tags, ratings } = req.body;
+    const { tags, ratings, page, pageSize } = req.body;
+    let filteredProblems = problems;
 
-    let filteredProblems = allProblems; // Start with all problems
-
-    // Filter by tags if any tags are selected
+    // Filter problems based on tags
     if (tags && tags.length > 0) {
         filteredProblems = filteredProblems.filter(problem => 
             tags.every(tag => problem.tags.includes(tag))
@@ -61,8 +60,19 @@ app.post('/filter-problems', (req, res) => {
         );
     }
 
-    res.json(filteredProblems); // Return the filtered problems
+    // Pagination
+    const totalProblems = filteredProblems.length;
+    const totalPages = Math.ceil(totalProblems / pageSize);
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const problemsToSend = filteredProblems.slice(startIndex, endIndex);
+
+    res.json({
+        problems: problemsToSend,
+        totalPages: totalPages
+    });
 });
+
 
 
 

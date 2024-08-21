@@ -29,7 +29,7 @@
         <div class="tags-containers">
             <button class="tag-btn" data-tag="dp">DP</button>
             <button class="tag-btn" data-tag="strings">strings</button>
-            <button class="tag-btn" data-tag="graph">graph</button>
+            <button class="tag-btn" data-tag="graphs">graphs</button>
             <button class="tag-btn" data-tag="binary search">binary search</button>
             <button class="tag-btn" data-tag="trees">trees</button>
             <button class="tag-btn" data-tag="sortings">sortings</button>
@@ -61,13 +61,16 @@
     </div>
 
     <div id="problems" style="margin-top:20px ;"></div>
-    
+    <div id="pagination"></div>
+
     </div>
     <script>
         
         document.addEventListener('DOMContentLoaded', () => {
     const toggleTagsBtn = document.getElementById('toggle-tags-btn');
     let tagsVisible = true;
+    let currentPage = 1;
+    const problemsPerPage = 30;
 
     // Apply rating classes to rating buttons
     document.querySelectorAll('.rating-btn').forEach(button => {
@@ -120,13 +123,17 @@
             },
             body: JSON.stringify({
                 tags: activeTags,
-                ratings: activeRatings
+                ratings: activeRatings,
+                page: currentPage,
+                pageSize: problemsPerPage
             })
         })
         .then(response => response.json())
-        .then(filteredProblems => {
-            console.log('Filtered Problems:', filteredProblems);
-            displayProblems(filteredProblems);
+        .then(data => {
+            console.log('Filtered Problems:', data.problems);
+            const totalPages = data.totalPages;
+            displayProblems(data.problems);
+            setupPagination(totalPages);
         })
         .catch(error => console.error('Error filtering problems:', error));
     }
@@ -178,6 +185,46 @@
         });
     }
 
+    function setupPagination(totalPages) {
+        const paginationContainer = document.getElementById('pagination');
+        if (!paginationContainer) {
+            console.error('Element with id "pagination" not found.');
+            return;
+        }
+
+        paginationContainer.innerHTML = ''; // Clear previous pagination
+
+        // Previous Button
+        if (currentPage > 1) {
+            const prevButton = document.createElement('button');
+            prevButton.textContent = 'Previous';
+            prevButton.className = 'page-btn';
+            prevButton.addEventListener('click', () => {
+                currentPage--;
+                filterProblems();
+            });
+            paginationContainer.appendChild(prevButton);
+        }
+
+        // Current Page Display
+        const currentPageDisplay = document.createElement('span');
+        currentPageDisplay.className = 'current-page';
+        currentPageDisplay.textContent = `Page ${currentPage} of ${totalPages}`;
+        paginationContainer.appendChild(currentPageDisplay);
+
+        // Next Button
+        if (currentPage < totalPages) {
+            const nextButton = document.createElement('button');
+            nextButton.textContent = 'Next';
+            nextButton.className = 'page-btn';
+            nextButton.addEventListener('click', () => {
+                currentPage++;
+                filterProblems();
+            });
+            paginationContainer.appendChild(nextButton);
+        }
+    }
+
     function getRatingClass(rating) {
         if (rating >= 2400) return 'legendary';
         if (rating >= 2100) return 'grandmaster';
@@ -187,7 +234,12 @@
         if (rating >= 1200) return 'pupil';
         return 'newbie';
     }
+
+    // Initial fetch
+    filterProblems();
 });
+
+
 </Script>
 
 </body>
