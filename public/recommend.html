@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recommended Problems</title>
+    <link rel="stylesheet" href="./Css/home.css">
     <link rel="stylesheet" href="./Css/recommend.css">
-    <link rel="stylesheet" href="./Css/index.css">
     <link rel="stylesheet" href="./Css/nav.css">
-
-
 </head>
+
 <body>
     <header class="header">
         <div class="main">
@@ -17,20 +17,48 @@
             <a href="index.html" class="logo" style="text-decoration: none;">CodeCrate</a>
         </div>
         <nav>
+            <a href="Home.html">Home</a>
             <a href="submit.html">Submit Problems</a>
             <a href="solutions.html">View Solutions</a>
             <a href="recommend.html">Recommended Problems</a>
             <a href="contest.html">Future Contest</a>
             <a href="favourite.html">Favorites</a>
         </nav>
-        <button onclick="toggleDarkMode()" id="darkModeToggle">Dark Mode</button>
     </header>
-    <h1>Recommended Problems</h1>
-    <input type="text" id="username" placeholder="Enter your Codeforces username"  style="height: 30px;">
-    <button onclick="getRecommendations()">Get Recommendations</button>
-    <ul id="problemList" class="problem-list"></ul>
+    <div class="recommend">
+        <h1>Recommended Problems</h1>
+        <input type="text" id="username" placeholder="Enter your CF Handle" style="height: 30px; text-align: center;">
+        <button onclick="getRecommendations()" style="margin: 10px;">Get Recommendations</button>
+        <button id="toggle-tags-btn">Hide Tags</button>
+
+    </div>
+
+    <div id="problems"></div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleTagsBtn = document.getElementById('toggle-tags-btn');
+            let tagsVisible = true;
+
+            // Apply rating classes to rating buttons
+            document.querySelectorAll('.rating-btn').forEach(button => {
+                const rating = parseInt(button.getAttribute('data-rating'), 10);
+                button.classList.add(`rating-${getRatingClass(rating)}`);
+            });
+
+            // Toggle tag visibility
+            toggleTagsBtn.addEventListener('click', () => {
+                const tagsContainers = document.querySelectorAll('.tags-container');
+
+                tagsContainers.forEach(container => {
+                    container.style.display = tagsVisible ? 'none' : 'block';
+                });
+
+                // Update button text based on the current state
+                toggleTagsBtn.textContent = tagsVisible ? 'Show Tags' : 'Hide Tags';
+                tagsVisible = !tagsVisible;
+            });
+        });
         function getRecommendations() {
             const username = document.getElementById('username').value;
 
@@ -42,23 +70,63 @@
             fetch(`/recommendations?username=${username}`)
                 .then(response => response.json())
                 .then(problems => {
-                    const problemList = document.getElementById('problemList');
-                    problemList.innerHTML = '';
+                    const problemsContainer = document.getElementById('problems');
+                    problemsContainer.innerHTML = '';
 
                     if (problems.length === 0) {
-                        problemList.innerHTML = '<li>No recommendations found.</li>';
+                        problemsContainer.innerHTML = '<li>No recommendations found.</li>';
                         return;
                     }
 
                     problems.forEach(problem => {
-                        const problemItem = document.createElement('li');
-                        problemItem.className = 'problem-item';
-                        problemItem.innerHTML = `
-                            <a href="https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}" target="_blank">
-                                ${problem.contestId} - ${problem.name} (${problem.index}) - Rating: ${problem.rating}
-                            </a>
-                        `;
-                        problemList.appendChild(problemItem);
+                        const problemElement = document.createElement('div');
+                        problemElement.className = 'problem';
+
+                        // Create problem link
+
+                        // Create the problem link element
+                        const problemLink = document.createElement('a');
+                        problemLink.href = `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`;
+                        problemLink.target = '_blank';
+
+                        // Create a span for the problem index with a specific class
+                        const problemIndex = document.createElement('span');
+                        problemIndex.textContent = problem.index;
+                        problemIndex.className = 'problem-index';
+
+                        // Create a span for the problem name
+                        const problemName = document.createElement('span');
+                        problemName.textContent = ` ${problem.name}`; // Add a space before the name
+
+                        // Append the index and name to the link
+                        problemLink.appendChild(problemIndex);
+                        problemLink.appendChild(problemName);
+
+                        // Create rating display
+                        const ratingElement = document.createElement('span');
+                        ratingElement.className = `rating rating-${getRatingClass(problem.rating)}`;
+                        ratingElement.textContent = `Rating: ${problem.rating !== undefined ? problem.rating : 'N/A'}`;
+
+                        // Create tags display
+                        const tagsContainer = document.createElement('div');
+                        tagsContainer.className = 'tags-container';
+
+                        problem.tags.forEach(tag => {
+                            const tagElement = document.createElement('span');
+                            tagElement.className = 'tag';
+                            tagElement.textContent = tag;
+                            tagsContainer.appendChild(tagElement);
+                        });
+
+                        // Append the link, tags, and rating to the problem element
+                        problemElement.appendChild(problemLink);
+                        problemElement.appendChild(tagsContainer);
+                        problemElement.appendChild(ratingElement);
+
+
+
+                        // Append the problem element to the problems container
+                        problemsContainer.appendChild(problemElement);
                     });
                 })
                 .catch(error => {
@@ -66,8 +134,19 @@
                     alert('Error fetching recommendations');
                 });
         }
+
+        function getRatingClass(rating) {
+            if (rating >= 2400) return 'legendary';
+            if (rating >= 2100) return 'grandmaster';
+            if (rating >= 1900) return 'master';
+            if (rating >= 1600) return 'expert';
+            if (rating >= 1400) return 'specialist';
+            if (rating >= 1200) return 'pupil';
+            return 'newbie';
+        }
     </script>
     <script src="darkmode.js"></script>
 
 </body>
+
 </html>

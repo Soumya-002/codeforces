@@ -33,9 +33,10 @@ body {
     border-radius: 5px;
 }
 button {
-    background-color: var(--button-background);
-    color: var(--button-text-color);
+    background-color: blueviolet;
+    color: white;
     border: none;
-    padding: 10px 20px;
+    border-radius: 5px;
+    padding: 10px;
     cursor: pointer;
 }

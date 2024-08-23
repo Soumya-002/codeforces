@@ -2,7 +2,7 @@
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 15px;
     margin-bottom: 15px;
 }
 
@@ -15,34 +15,6 @@
     color: #fff;
     border: none;
     transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.rating-legendary {
-    background-color: #ff0000;
-}
-
-.rating-grandmaster {
-    background-color: #ff6600;
-}
-
-.rating-master {
-    background-color: #8000ff;
-}
-
-.rating-expert {
-    background-color: #00aa00;
-}
-
-.rating-specialist {
-    background-color: #03a89e;
-}
-
-.rating-pupil {
-    background-color: #007bff;
-}
-
-.rating-newbie {
-    background-color: #808080;
 }
 
 .rating-btn:hover {
@@ -72,9 +44,17 @@
     color: #007bff;
     text-decoration: none;
 }
-
+.problem-index {
+    padding: 6px 10px;
+    background-color: rgb(145, 44, 200);
+    font-weight: bold;
+    color: white;
+    margin-right: 5px;
+    border-radius:5px;
+}
 .problem a:hover {
-    text-decoration: underline;
+    color: purple;
+    transform: translateY(-3px);
 }
 
 .tags-container {

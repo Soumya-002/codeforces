@@ -7,7 +7,7 @@
     <title>Document</title>
     <link rel="stylesheet" href="./Css/nav.css">
     <link rel="stylesheet" href="./Css/home.css">
-    
+
 </head>
 
 <body>
@@ -28,12 +28,12 @@
     <div class="filter-section" style="margin-top: 25px;">
         <div class="tags-containers">
             <button class="tag-btn" data-tag="dp">DP</button>
-            <button class="tag-btn" data-tag="strings">strings</button>
-            <button class="tag-btn" data-tag="graphs">graphs</button>
-            <button class="tag-btn" data-tag="binary search">binary search</button>
-            <button class="tag-btn" data-tag="trees">trees</button>
-            <button class="tag-btn" data-tag="sortings">sortings</button>
-            <button class="tag-btn" data-tag="bitmasks">bitmasks</button>
+            <button class="tag-btn" data-tag="strings">String</button>
+            <button class="tag-btn" data-tag="graphs">Graphs</button>
+            <button class="tag-btn" data-tag="binary search">Binary search</button>
+            <button class="tag-btn" data-tag="trees">Trees</button>
+            <button class="tag-btn" data-tag="sortings">Sortings</button>
+            <button class="tag-btn" data-tag="bitmasks">Bitmasks</button>
             <button class="tag-btn" data-tag="greedy">Greedy</button>
             <button class="tag-btn" data-tag="math">Math</button>
             <!-- Add more buttons as needed -->
@@ -52,8 +52,14 @@
             <button class="rating-btn rating-master" data-rating="1800">1800</button>
             <button class="rating-btn rating-master" data-rating="1900">1900</button>
             <button class="rating-btn rating-master" data-rating="2000">2000</button>
+            <button class="rating-btn rating-master" data-rating="2100">2100</button>
+            <button class="rating-btn rating-grandmaster" data-rating="2200">2200</button>
+            <button class="rating-btn rating-grandmaster" data-rating="2300">2300</button>
             <button class="rating-btn rating-grandmaster" data-rating="2400">2400</button>
             <button class="rating-btn rating-legendary" data-rating="2500">2500</button>
+            <button class="rating-btn rating-legendary" data-rating="2600">2600</button>
+            <button class="rating-btn rating-legendary" data-rating="3000">3000</button>
+
             <!-- Add more buttons as needed -->
         </div>
         <button id="toggle-tags-btn">Hide Tags</button>
@@ -65,182 +71,188 @@
 
     </div>
     <script>
-        
+
         document.addEventListener('DOMContentLoaded', () => {
-    const toggleTagsBtn = document.getElementById('toggle-tags-btn');
-    let tagsVisible = true;
-    let currentPage = 1;
-    const problemsPerPage = 30;
+            const toggleTagsBtn = document.getElementById('toggle-tags-btn');
+            let tagsVisible = true;
+            let currentPage = 1;
+            const problemsPerPage = 30;
 
-    // Apply rating classes to rating buttons
-    document.querySelectorAll('.rating-btn').forEach(button => {
-        const rating = parseInt(button.getAttribute('data-rating'), 10);
-        button.classList.add(`rating-${getRatingClass(rating)}`);
-    });
+            // Apply rating classes to rating buttons
+            document.querySelectorAll('.rating-btn').forEach(button => {
+                const rating = parseInt(button.getAttribute('data-rating'), 10);
+                button.classList.add(`rating-${getRatingClass(rating)}`);
+            });
 
-    // Toggle tag visibility
-    toggleTagsBtn.addEventListener('click', () => {
-        const tagsContainers = document.querySelectorAll('.tags-container');
+            // Toggle tag visibility
+            toggleTagsBtn.addEventListener('click', () => {
+                const tagsContainers = document.querySelectorAll('.tags-container');
 
-        tagsContainers.forEach(container => {
-            container.style.display = tagsVisible ? 'none' : 'block';
-        });
+                tagsContainers.forEach(container => {
+                    container.style.display = tagsVisible ? 'none' : 'block';
+                });
 
-        // Update button text based on the current state
-        toggleTagsBtn.textContent = tagsVisible ? 'Show Tags' : 'Hide Tags';
-        tagsVisible = !tagsVisible;
-    });
+                // Update button text based on the current state
+                toggleTagsBtn.textContent = tagsVisible ? 'Show Tags' : 'Hide Tags';
+                tagsVisible = !tagsVisible;
+            });
 
-    const tagButtons = document.querySelectorAll('.tag-btn');
-    const ratingButtons = document.querySelectorAll('.rating-btn');
+            const tagButtons = document.querySelectorAll('.tag-btn');
+            const ratingButtons = document.querySelectorAll('.rating-btn');
 
-    // Toggle active state on click
-    tagButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            button.classList.toggle('active');
+            // Toggle active state on click
+            tagButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    button.classList.toggle('active');
+                    filterProblems();
+                });
+            });
+
+            ratingButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    button.classList.toggle('active');
+                    filterProblems();
+                });
+            });
+
+            function filterProblems() {
+                const activeTags = Array.from(document.querySelectorAll('.tag-btn.active')).map(btn => btn.getAttribute('data-tag'));
+                const activeRatings = Array.from(document.querySelectorAll('.rating-btn.active')).map(btn => btn.getAttribute('data-rating'));
+
+                fetch('/filter-problems', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tags: activeTags,
+                        ratings: activeRatings,
+                        page: currentPage,
+                        pageSize: problemsPerPage
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const totalPages = data.totalPages;
+                        displayProblems(data.problems);
+                        setupPagination(totalPages);
+                    })
+                    .catch(error => console.error('Error filtering problems:', error));
+            }
+
+            function displayProblems(problems) {
+                const problemsContainer = document.getElementById('problems');
+
+                if (!problemsContainer) {
+                    console.error('Element with id "problems" not found.');
+                    return;
+                }
+
+                problemsContainer.innerHTML = ''; // Clear previous problems
+
+                problems.forEach(problem => {
+                    const problemElement = document.createElement('div');
+                    problemElement.className = 'problem';
+
+                    // Create problem link
+                    const problemLink = document.createElement('a');
+                    problemLink.href = `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`;
+                    problemLink.target = '_blank';
+                    const problemIndex = document.createElement('span');
+                    problemIndex.textContent = problem.index;
+                    problemIndex.className = 'problem-index';
+
+                    // Create a span for the problem name
+                    const problemName = document.createElement('span');
+                    problemName.textContent = ` ${problem.name}`; // Add a space before the name
+
+                    // Append the index and name to the link
+                    problemLink.appendChild(problemIndex);
+                    problemLink.appendChild(problemName);
+
+                    // Create rating display
+                    const ratingElement = document.createElement('span');
+                    ratingElement.className = `rating rating-${getRatingClass(problem.rating)}`;
+                    ratingElement.textContent = `Rating: ${problem.rating !== undefined ? problem.rating : 'N/A'}`;
+
+                    // Create tags display
+                    const tagsContainer = document.createElement('div');
+                    tagsContainer.className = 'tags-container';
+
+                    problem.tags.forEach(tag => {
+                        const tagElement = document.createElement('span');
+                        tagElement.className = 'tag';
+                        tagElement.textContent = tag;
+                        tagsContainer.appendChild(tagElement);
+                    });
+
+                    // Append the link, rating, and tags to the problem element
+                    problemElement.appendChild(problemLink);
+                    problemElement.appendChild(tagsContainer);
+                    problemElement.appendChild(ratingElement);
+
+
+                    // Append the problem element to the problems container
+                    problemsContainer.appendChild(problemElement);
+                });
+            }
+
+            function setupPagination(totalPages) {
+                const paginationContainer = document.getElementById('pagination');
+                if (!paginationContainer) {
+                    console.error('Element with id "pagination" not found.');
+                    return;
+                }
+
+                paginationContainer.innerHTML = ''; // Clear previous pagination
+
+                // Previous Button
+                if (currentPage > 1) {
+                    const prevButton = document.createElement('button');
+                    prevButton.textContent = 'Previous';
+                    prevButton.className = 'page-btn';
+                    prevButton.addEventListener('click', () => {
+                        currentPage--;
+                        filterProblems();
+                    });
+                    paginationContainer.appendChild(prevButton);
+                }
+
+                // Current Page Display
+                const currentPageDisplay = document.createElement('span');
+                currentPageDisplay.className = 'current-page';
+                currentPageDisplay.textContent = `Page ${currentPage} of ${totalPages}`;
+                paginationContainer.appendChild(currentPageDisplay);
+
+                // Next Button
+                if (currentPage < totalPages) {
+                    const nextButton = document.createElement('button');
+                    nextButton.textContent = 'Next';
+                    nextButton.className = 'page-btn';
+                    nextButton.addEventListener('click', () => {
+                        currentPage++;
+                        filterProblems();
+                    });
+                    paginationContainer.appendChild(nextButton);
+                }
+            }
+
+            function getRatingClass(rating) {
+                if (rating >= 2400) return 'legendary';
+                if (rating >= 2100) return 'grandmaster';
+                if (rating >= 1900) return 'master';
+                if (rating >= 1600) return 'expert';
+                if (rating >= 1400) return 'specialist';
+                if (rating >= 1200) return 'pupil';
+                return 'newbie';
+            }
+
+            // Initial fetch
             filterProblems();
         });
-    });
-
-    ratingButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            button.classList.toggle('active');
-            filterProblems();
-        });
-    });
-
-    function filterProblems() {
-        const activeTags = Array.from(document.querySelectorAll('.tag-btn.active')).map(btn => btn.getAttribute('data-tag'));
-        const activeRatings = Array.from(document.querySelectorAll('.rating-btn.active')).map(btn => btn.getAttribute('data-rating'));
-
-        console.log('Active Tags:', activeTags);
-        console.log('Active Ratings:', activeRatings);
-
-        fetch('/filter-problems', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                tags: activeTags,
-                ratings: activeRatings,
-                page: currentPage,
-                pageSize: problemsPerPage
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Filtered Problems:', data.problems);
-            const totalPages = data.totalPages;
-            displayProblems(data.problems);
-            setupPagination(totalPages);
-        })
-        .catch(error => console.error('Error filtering problems:', error));
-    }
-
-    function displayProblems(problems) {
-        const problemsContainer = document.getElementById('problems');
-
-        if (!problemsContainer) {
-            console.error('Element with id "problems" not found.');
-            return;
-        }
-
-        problemsContainer.innerHTML = ''; // Clear previous problems
-
-        problems.forEach(problem => {
-            const problemElement = document.createElement('div');
-            problemElement.className = 'problem';
-
-            // Create problem link
-            const problemLink = document.createElement('a');
-            problemLink.href = `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`;
-            problemLink.target = '_blank';
-            problemLink.textContent = `${problem.contestId} - ${problem.name} (${problem.index})`;
-
-            // Create rating display
-            const ratingElement = document.createElement('span');
-            ratingElement.className = `rating rating-${getRatingClass(problem.rating)}`;
-            ratingElement.textContent = `Rating: ${problem.rating !== undefined ? problem.rating : 'N/A'}`;
-
-            // Create tags display
-            const tagsContainer = document.createElement('div');
-            tagsContainer.className = 'tags-container';
-
-            problem.tags.forEach(tag => {
-                const tagElement = document.createElement('span');
-                tagElement.className = 'tag';
-                tagElement.textContent = tag;
-                tagsContainer.appendChild(tagElement);
-            });
-
-            // Append the link, rating, and tags to the problem element
-            problemElement.appendChild(problemLink);
-            problemElement.appendChild(tagsContainer);
-            problemElement.appendChild(ratingElement);
 
 
-            // Append the problem element to the problems container
-            problemsContainer.appendChild(problemElement);
-        });
-    }
-
-    function setupPagination(totalPages) {
-        const paginationContainer = document.getElementById('pagination');
-        if (!paginationContainer) {
-            console.error('Element with id "pagination" not found.');
-            return;
-        }
-
-        paginationContainer.innerHTML = ''; // Clear previous pagination
-
-        // Previous Button
-        if (currentPage > 1) {
-            const prevButton = document.createElement('button');
-            prevButton.textContent = 'Previous';
-            prevButton.className = 'page-btn';
-            prevButton.addEventListener('click', () => {
-                currentPage--;
-                filterProblems();
-            });
-            paginationContainer.appendChild(prevButton);
-        }
-
-        // Current Page Display
-        const currentPageDisplay = document.createElement('span');
-        currentPageDisplay.className = 'current-page';
-        currentPageDisplay.textContent = `Page ${currentPage} of ${totalPages}`;
-        paginationContainer.appendChild(currentPageDisplay);
-
-        // Next Button
-        if (currentPage < totalPages) {
-            const nextButton = document.createElement('button');
-            nextButton.textContent = 'Next';
-            nextButton.className = 'page-btn';
-            nextButton.addEventListener('click', () => {
-                currentPage++;
-                filterProblems();
-            });
-            paginationContainer.appendChild(nextButton);
-        }
-    }
-
-    function getRatingClass(rating) {
-        if (rating >= 2400) return 'legendary';
-        if (rating >= 2100) return 'grandmaster';
-        if (rating >= 1900) return 'master';
-        if (rating >= 1600) return 'expert';
-        if (rating >= 1400) return 'specialist';
-        if (rating >= 1200) return 'pupil';
-        return 'newbie';
-    }
-
-    // Initial fetch
-    filterProblems();
-});
-
-
-</Script>
+    </Script>
 
 </body>
 
