@@ -83,14 +83,14 @@
                 const tagFilterSection = document.getElementById('tagFilterSection');
                 const ratingFilterSection = document.getElementById('ratingFilterSection');
 
-                fetch(`/problems?page=${currentPage}&limit=${problemsPerPage}&tags=${selectedTags.join(',')}&ratings=${selectedRatings.join(',')}`)
+                fetch(`https://codeforces-ek8e.onrender.com/problems?page=${currentPage}&limit=${problemsPerPage}&tags=${selectedTags.join(',')}&ratings=${selectedRatings.join(',')}`)
                     .then(response => response.json())
                     .then(problems => {
                         if (!Array.isArray(problems.problems)) {
                             throw new Error('Problems response is not an array');
                         }
 
-                        fetch('/solved-problems', {
+                        fetch('https://codeforces-ek8e.onrender.com/solved-problems', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -155,7 +155,7 @@
             function toggleFavorite(problem) {
                 const username = document.getElementById('username').value; // Assume username is stored or available
 
-                fetch('/favorites', {
+                fetch('https://codeforces-ek8e.onrender.com/favorites', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -188,7 +188,7 @@
             }
 
             function updatePaginationControls() {
-                fetch('/total-problems')
+                fetch('https://codeforces-ek8e.onrender.com/total-problems')
                     .then(response => response.json())
                     .then(total => {
                         const totalPages = Math.ceil(total / problemsPerPage);

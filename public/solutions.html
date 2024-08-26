@@ -43,7 +43,7 @@
         let allSolutions = [];
 
 // Fetch solutions from the server
-fetch('/solutions')
+fetch('https://codeforces-ek8e.onrender.com/solutions')
     .then(response => response.json())
     .then(data => {
         allSolutions = data;
@@ -83,7 +83,7 @@ function displaySolutions(solutions) {
 }
 
 function likeSolution(solutionId) {
-    fetch(`/solutions/like/${solutionId}`, {
+    fetch(`https://codeforces-ek8e.onrender.com/solutions/like/${solutionId}`, {
         method: 'POST',
     })
     .then(response => response.json())
@@ -104,7 +104,7 @@ function likeSolution(solutionId) {
     });
 }
 function dislikeSolution(solutionId) {
-    fetch(`/solutions/dislike/${solutionId}`, {
+    fetch(`https://codeforces-ek8e.onrender.com/solutions/dislike/${solutionId}`, {
         method: 'POST',
     })
     .then(response => response.json())

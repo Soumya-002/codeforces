@@ -40,7 +40,7 @@
                 return;
             }
 
-            fetch(`/favorites/get-favorites/${username}`)
+            fetch(`https://codeforces-ek8e.onrender.com/favorites/get-favorites/${username}`)
                 .then(response => response.json())
                 .then(favorites => {
                     const favoritesContainer = document.getElementById('favorites');
@@ -76,7 +76,7 @@
                 return;
             }
 
-            fetch('/favorites', {
+            fetch('https://codeforces-ek8e.onrender.com/favorites', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

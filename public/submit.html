@@ -57,7 +57,7 @@
                 solutionText: editor.getValue() // Get the value from CodeMirror
             };
 
-            fetch('/submit-solution', {
+            fetch('https://codeforces-ek8e.onrender.com/submit-solution', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

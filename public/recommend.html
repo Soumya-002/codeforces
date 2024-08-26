@@ -67,7 +67,7 @@
                 return;
             }
 
-            fetch(`/recommendations?username=${username}`)
+            fetch(`https://codeforces-ek8e.onrender.com/recommendations?username=${username}`)
                 .then(response => response.json())
                 .then(problems => {
                     const problemsContainer = document.getElementById('problems');

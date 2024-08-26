@@ -35,7 +35,7 @@
     <script>
         async function loadContests() {
             try {
-                const response = await fetch('/upcoming-contests');
+                const response = await fetch('https://codeforces-ek8e.onrender.com/upcoming-contests');
                 const contests = await response.json();
                 const contestsContainer = document.getElementById('contests');
                 contestsContainer.innerHTML = '';
