@@ -11,7 +11,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 app.use(cors({
-    origin: 'https://codecraft35.netlify.app',
+    origin: 'https://main--codecraft35.netlify.app',
   }));
 
 app.use(bodyParser.json());
