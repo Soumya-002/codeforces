@@ -125,7 +125,7 @@
                 const activeTags = Array.from(document.querySelectorAll('.tag-btn.active')).map(btn => btn.getAttribute('data-tag'));
                 const activeRatings = Array.from(document.querySelectorAll('.rating-btn.active')).map(btn => btn.getAttribute('data-rating'));
 
-                fetch('https://codeforces-ek8e.onrender.com/filter-problems', {
+                fetch('https://codeforces-1.onrender.com/filter-problems', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

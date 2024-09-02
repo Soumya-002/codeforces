@@ -47,7 +47,7 @@
         let allSolutions = [];
 
 // Fetch solutions from the server
-fetch('https://codeforces-ek8e.onrender.com/solutions')
+fetch('https://codeforces-1.onrender.com/solutions')
     .then(response => response.json())
     .then(data => {
         allSolutions = data;
@@ -87,7 +87,7 @@ function displaySolutions(solutions) {
 }
 
 function likeSolution(solutionId) {
-    fetch(`https://codeforces-ek8e.onrender.com/solutions/like/${solutionId}`, {
+    fetch(`https://codeforces-1.onrender.com/solutions/like/${solutionId}`, {
         method: 'POST',
     })
     .then(response => response.json())
@@ -102,13 +102,13 @@ function likeSolution(solutionId) {
         console.error('Error liking solution:', error);
 
         // Log the response text for debugging
-        fetch(`https://codeforces-ek8e.onrender.com/solutions/like/${solutionId}`, { method: 'POST' })
+        fetch(`https://codeforces-1.onrender.com/solutions/like/${solutionId}`, { method: 'POST' })
             .then(response => response.text())
             .then(text => console.error('Response:', text));
     });
 }
 function dislikeSolution(solutionId) {
-    fetch(`https://codeforces-ek8e.onrender.com/solutions/dislike/${solutionId}`, {
+    fetch(`https://codeforces-1.onrender.com/solutions/dislike/${solutionId}`, {
         method: 'POST',
     })
     .then(response => response.json())
