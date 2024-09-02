@@ -8,25 +8,31 @@
     <link rel="stylesheet" href="./Css/home.css">
     <link rel="stylesheet" href="./Css/recommend.css">
     <link rel="stylesheet" href="./Css/nav.css">
+
 </head>
 
 <body>
     <header class="header">
         <div class="main">
-            <img src="./assests/logo.svg" alt="">
+            <img src="./assests/logo.svg"alt="Logo" class="logo-img">
             <a href="index.html" class="logo" style="text-decoration: none;">CodeCrate</a>
         </div>
+        <div class="hamburger">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
         <nav>
-            <a href="Home.html">Home</a>
-            <a href="submit.html">Submit Problems</a>
+            <a href="index.html">Home</a>
             <a href="solutions.html">View Solutions</a>
             <a href="recommend.html">Recommended Problems</a>
             <a href="contest.html">Future Contest</a>
             <a href="favourite.html">Favorites</a>
         </nav>
+        <button onclick="toggleDarkMode()" id="darkModeToggle">Dark Mode</button>
     </header>
     <div class="recommend">
-        <h1>Recommended Problems</h1>
+        <h1 style="color: violet;">Recommended Problems</h1>
         <input type="text" id="username" placeholder="Enter your CF Handle" style="height: 30px; text-align: center;">
         <button onclick="getRecommendations()" style="margin: 10px;">Get Recommendations</button>
         <button id="toggle-tags-btn">Hide Tags</button>
@@ -146,6 +152,7 @@
         }
     </script>
     <script src="darkmode.js"></script>
+    <script src="hamburger.js"></script>
 
 </body>
 

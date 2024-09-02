@@ -6,6 +6,8 @@
     <title>Submit a Solution</title>
     <link rel="stylesheet" href="./Css/submit.css">
     <link rel="stylesheet" href="./Css/nav.css">
+    <link rel="stylesheet" href="./Css/darkmode.css">
+
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
@@ -14,8 +16,13 @@
 <body>
     <header class="header">
         <div class="main">
-            <img src="logo.svg" alt="">
+            <img src="./assests/logo.svg"alt="Logo" class="logo-img">
             <a href="index.html" class="logo" style="text-decoration: none;">CodeCrate</a>
+        </div>
+        <div class="hamburger">
+            <div></div>
+            <div></div>
+            <div></div>
         </div>
         <nav>
             <a href="index.html">Home</a>
@@ -26,8 +33,9 @@
         </nav>
         <button onclick="toggleDarkMode()" id="darkModeToggle">Dark Mode</button>
     </header>
+    
     <div class="container">
-        <h1>Submit Solution</h1>
+        <h1 style="color: black;">Submit Solution</h1>
         <form id="submitForm">
             <input type="text" id="username" name="username" placeholder="Username" required>
             <input type="text" id="problemId" name="problemId" placeholder="Problem ID" required>
@@ -78,6 +86,8 @@
         });
     </script>
     <script src="darkmode.js"></script>
-
+    <script src="hamburger.js"></script>
+        
+        
 </body>
 </html>

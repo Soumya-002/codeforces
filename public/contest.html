@@ -11,17 +11,22 @@
 <body>
     <header class="header">
         <div class="main">
-            <img src="./assests/logo.svg" alt="">
+            <img src="./assests/logo.svg"alt="Logo" class="logo-img">
             <a href="index.html" class="logo" style="text-decoration: none;">CodeCrate</a>
         </div>
+        <div class="hamburger">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
         <nav>
-            <a href="Home.html">Home</a>
-            <a href="submit.html">Submit Problems</a>
+            <a href="index.html">Home</a>
             <a href="solutions.html">View Solutions</a>
             <a href="recommend.html">Recommended Problems</a>
             <a href="contest.html">Future Contest</a>
             <a href="favourite.html">Favorites</a>
         </nav>
+        <button onclick="toggleDarkMode()" id="darkModeToggle">Dark Mode</button>
     </header>
     <div class="container">
         <div class="head">
@@ -63,6 +68,7 @@
         window.onload = loadContests;
     </script>
     <script src="darkmode.js"></script>
+    <script src="hamburger.js"></script>
 
 </body>
 </html>

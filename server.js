@@ -9,7 +9,7 @@ const connectDB = require('./config/db');
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 app.use(cors({
     origin: 'https://66cc7bc037ef60528656a0c1--jocular-sopapillas-a9a03a.netlify.app',
   }));

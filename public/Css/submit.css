@@ -6,7 +6,6 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     background-color: #f0f0f0;
 }
 .container {
@@ -14,7 +13,7 @@ body {
     padding: 50px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 400px;
+    width: auto;
 }
 h1 {
     text-align: center;
@@ -37,24 +36,6 @@ input, textarea {
 }
 button:hover {
     background-color: #0056b3;
-}
-
-:root {
-    --background-color: #ffffff;
-    --text-color: #000000;
-    --header-background: #f8f9fa;
-    --filter-background: #ffffff;
-    --button-background: #007bff;
-    --button-text-color: #ffffff;
-}
-
-.dark-mode {
-    --background-color: #121212;
-    --text-color: #ffffff;
-    --header-background: #1f1f1f;
-    --filter-background: #2c2c2c;
-    --button-background: #3a3a3a;
-    --button-text-color: #ffffff;
 }
 
 body {
@@ -90,4 +71,11 @@ button {
 
 button:hover {
     opacity: 0.9;
+}
+:root {
+    --background-color: #ffffff;
+}
+
+.dark-mode {
+    --background-color: #121212;
 }

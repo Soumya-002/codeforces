@@ -15,12 +15,16 @@
 <body>
     <header class="header">
         <div class="main">
-            <img src="./assests/logo.svg" alt="">
+            <img src="./assests/logo.svg" alt="Logo" class="logo-img">
             <a href="index.html" class="logo" style="text-decoration: none;">CodeCrate</a>
+        </div>
+        <div class="hamburger">
+            <div></div>
+            <div></div>
+            <div></div>
         </div>
         <nav>
             <a href="Home.html">Home</a>
-            <a href="submit.html">Submit Problems</a>
             <a href="solutions.html">View Solutions</a>
             <a href="recommend.html">Recommended Problems</a>
             <a href="contest.html">Future Contest</a>
@@ -33,35 +37,6 @@
         <div class="input-container">
             <input type="text" id="username" placeholder="Enter your CF Handle" style="height: 30px; text-align: center;">
             <button onclick="loadProblems()">Load Problems</button>
-        </div>
-        <div class="tag-filter hidden" id="tagFilterSection">
-            <div class="filter-container" class="hidden">
-                <select id="tagFilter" multiple>
-                    <option value="dp">Dynamic Programming</option>
-                    <option value="greedy">Greedy</option>
-                    <option value="math">Math</option>
-                    <option value="implementation">Implementation</option>
-                    <option value="graphs">Graphs</option>
-                    <option value="binary search">Binary Search</option>
-                    <option value="string">String</option>
-                    <option value="trees">Trees</option>
-                </select>
-                <button onclick="loadProblems()" class="btn">Filter by Tags</button>
-            </div>
-
-            <div class="rating-filter hidden" id="ratingFilterSection">
-                <div class="filter-container">
-                    <select id="ratingFilter" class="tagFilter" multiple>
-                        <option value="1000">1000</option>
-                        <option value="1200">1200</option>
-                        <option value="1400">1400</option>
-                        <option value="1600">1600</option>
-                        <option value="1800">1800</option>
-                        <option value="2000">2000</option>
-                    </select>
-                    <button onclick="loadProblems()" class="btn">Filter by Rating</button>
-                </div>
-            </div>
         </div>
 
         <div id="problems"></div>
@@ -76,14 +51,8 @@
 
             function loadProblems() {
                 const username = document.getElementById('username').value;
-                const selectedTags = Array.from(document.getElementById('tagFilter').selectedOptions).map(option => option.value);
-                const selectedRatings = Array.from(document.getElementById('ratingFilter').selectedOptions).map(option => option.value);
 
-                // Show filters after problems are successfully loaded
-                const tagFilterSection = document.getElementById('tagFilterSection');
-                const ratingFilterSection = document.getElementById('ratingFilterSection');
-
-                fetch(`https://codeforces-ek8e.onrender.com/problems?page=${currentPage}&limit=${problemsPerPage}&tags=${selectedTags.join(',')}&ratings=${selectedRatings.join(',')}`)
+                fetch(`https://codeforces-ek8e.onrender.com/problems?page=${currentPage}&limit=${problemsPerPage}`)
                     .then(response => response.json())
                     .then(problems => {
                         if (!Array.isArray(problems.problems)) {
@@ -114,36 +83,27 @@
                                             solved.contestId === problem.contestId && solved.index === problem.index
                                         );
 
-                                        if ((selectedTags.length === 0 || selectedTags.some(tag => problem.tags.includes(tag))) &&
-                                            (selectedRatings.length === 0 || selectedRatings.includes(String(problem.rating)))) {
+                                        const problemElement = document.createElement('div');
+                                        problemElement.className = 'problem' + (isSolved ? ' solved' : '');
 
-                                            const problemElement = document.createElement('div');
-                                            problemElement.className = 'problem' + (isSolved ? ' solved' : '');
+                                        const problemLink = document.createElement('a');
+                                        problemLink.href = `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`;
+                                        problemLink.target = '_blank';
+                                        problemLink.textContent = `${problem.contestId} - ${problem.name} (${problem.index})`;
 
-                                            const problemLink = document.createElement('a');
-                                            problemLink.href = `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`;
-                                            problemLink.target = '_blank';
-                                            problemLink.textContent = `${problem.contestId} - ${problem.name} (${problem.index})`;
+                                        // Favorite icon
+                                        const favoriteIcon = document.createElement('i');
+                                        favoriteIcon.className = 'fa fa-star-o'; // Default to not favorite
+                                        favoriteIcon.id = `favorite-icon-${problem.contestId}-${problem.index}`;
+                                        favoriteIcon.onclick = () => toggleFavorite(problem);
 
-                                            // Favorite icon
-                                            const favoriteIcon = document.createElement('i');
-                                            favoriteIcon.className = 'fa fa-star-o'; // Default to not favorite
-                                            favoriteIcon.id = `favorite-icon-${problem.contestId}-${problem.index}`;
-                                            favoriteIcon.onclick = () => toggleFavorite(problem);
-
-                                            // Append elements
-                                            problemElement.appendChild(problemLink);
-                                            problemElement.appendChild(favoriteIcon);
-                                            problemsContainer.appendChild(problemElement);
-                                        }
+                                        // Append elements
+                                        problemElement.appendChild(problemLink);
+                                        problemElement.appendChild(favoriteIcon);
+                                        problemsContainer.appendChild(problemElement);
                                     });
 
                                     updatePaginationControls();
-
-                                    // Show filters after problems are successfully loaded
-                                    tagFilterSection.classList.remove('hidden');
-                                    ratingFilterSection.classList.remove('hidden');
-                                    tagFilterSection.classList.add('show-filters');
                                 }
                             })
                             .catch(error => console.error('Error fetching solved problems:', error));
@@ -151,9 +111,8 @@
                     .catch(error => console.error('Error fetching problems:', error));
             }
 
-
             function toggleFavorite(problem) {
-                const username = document.getElementById('username').value; // Assume username is stored or available
+                const username = document.getElementById('username').value;
 
                 fetch('https://codeforces-ek8e.onrender.com/favorites', {
                     method: 'POST',
@@ -174,7 +133,6 @@
                     .then(response => response.json())
                     .then(data => {
                         console.log(data.message);
-                        // Update the UI to reflect the favorite status change
                         const favoriteIcon = document.getElementById(`favorite-icon-${problem.contestId}-${problem.index}`);
                         if (favoriteIcon.classList.contains('fa-star-o')) {
                             favoriteIcon.classList.remove('fa-star-o');
@@ -214,11 +172,10 @@
                 }
             }
 
-            // Call this function after the user enters their username
             document.getElementById('username').addEventListener('change', storeUsername);
         </script>
         <script src="darkmode.js"></script>
-
+        <script src="hamburger.js"></script>
 </body>
 
 </html>

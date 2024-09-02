@@ -15,3 +15,7 @@ button{
     padding: 10px 20px;
     cursor: pointer;
 }
+.dark-mode {
+    background: #121212;
+
+}
